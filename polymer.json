@@ -1,0 +1,31 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/book-app.html",
+  "fragments": [
+    "src/book-home.html",
+    "src/book-explore.html",
+    "src/book-detail.html",
+    "src/book-viewer.html",
+    "src/book-about.html",
+    "src/book-404.html"
+  ],
+  "sources": [
+    "src/**/*",
+    "images/**/*"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/*.js"
+  ],
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-bundled"
+    },
+    {
+      "preset": "es6-unbundled"
+    }
+  ]
+}
