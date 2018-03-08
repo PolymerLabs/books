@@ -1,3 +1,8 @@
+import { LitElement, html, repeat, unsafeHTML, connect, updateMetadata, store, book, bookSelector, refreshPage, responsiveWidth, BookButtonStyle } from './book-app.js';
+
+export { fetchBook } from 'file:///Users/ffu/Work/www/misc/books/src/actions/book.js';
+
+
 /**
 @license
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -7,43 +12,21 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { repeat } from '../../node_modules/lit-html/lib/repeat.js';
-import { unsafeHTML } from '../../node_modules/lit-html/lib/unsafe-html.js';
-import { connect } from '../../node_modules/pwa-helpers/connect-mixin.js';
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
-
-// This element is connected to the redux store.
-import { store } from '../store.js';
-
-// We are lazy loading its reducer.
-import { book, bookSelector } from '../reducers/book.js';
 store.addReducers({
   book
 });
 
-// We want to export this action so it can be called after import() returns the module
-export { fetchBook } from '../actions/book.js';
-
-import { refreshPage } from '../actions/app.js';
-
-import { PageViewElement } from './page-view-element.js';
-import { responsiveWidth, BookButtonStyle } from './shared-styles.js';
-import './book-rating.js';
-import './book-offline.js';
-
-class BookDetail extends connect(store)(PageViewElement) {
-  render({item, showOffline}) {
-    // Don't render if there is no item.
-    if (!item) {
+class BookDetail extends connect(store)(LitElement) {
+  render({ active, item, showOffline }) {
+    // Don't render if the page is not active or if there is no item.
+    if (!active || !item) {
       return;
     }
 
     const info = item.volumeInfo;
     const accessInfo = item.accessInfo;
     const author = info.authors && info.authors.join(', ');
-    const date = (new Date(info.publishedDate)).getFullYear();
+    const date = new Date(info.publishedDate).getFullYear();
     const pageCount = info.pageCount;
     const ratingsCount = info.ratingsCount;
     const publisher = info.publisher;
@@ -228,7 +211,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         <div class="desc" hidden="${categories.length === 0}">
           <h3>Categories</h3>
           <ul>
-            ${repeat(categories, (item) => html`
+            ${repeat(categories, item => html`
               <li>${item}</li>
             `)}
           </ul>
@@ -236,7 +219,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         <div class="desc" hidden="${identifiers.length === 0}">
           <h3>ISBN</h3>
           <ul>
-            ${repeat(identifiers, (item) => html`
+            ${repeat(identifiers, item => html`
               <li>${item.type}: ${item.identifier}</li>
             `)}
           </ul>
@@ -254,10 +237,13 @@ class BookDetail extends connect(store)(PageViewElement) {
     `;
   }
 
-  static get properties() { return {
-    item: Object,
-    showOffline: Boolean
-  }}
+  static get properties() {
+    return {
+      active: Boolean,
+      item: Object,
+      showOffline: Boolean
+    };
+  }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
@@ -267,3 +253,9 @@ class BookDetail extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('book-detail', BookDetail);
+
+var bookDetail = {
+  fetchBook: fetchBook
+};
+
+export { bookDetail as $bookDetail };

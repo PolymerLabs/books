@@ -10,18 +10,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
 import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
+import { PageViewElement } from './page-view-element.js';
 
-class BookAbout extends LitElement {
-  render({active}) {
-    // Don't render if the page is not active.
-    if (!active) {
-      return;
-    }
-
+class BookAbout extends PageViewElement {
+  render() {
     updateMetadata({
       title: 'About - Books',
-      description: 'About page',
-      url: document.location.href
+      description: 'About page'
     });
 
     return html`
@@ -37,10 +32,6 @@ class BookAbout extends LitElement {
       <p><a href="http://books.google.com" target="_blank" rel="noopener">Visit the regular Google Books site</a></p>
     `;
   }
-
-  static get properties() { return {
-    active: Boolean
-  }}
 }
 
 window.customElements.define('book-about', BookAbout);

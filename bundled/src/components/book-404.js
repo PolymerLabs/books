@@ -1,3 +1,6 @@
+import { LitElement, html, updateMetadata } from './book-app.js';
+
+
 /**
 @license
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -8,12 +11,13 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js'
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
-import { PageViewElement } from './page-view-element.js';
+class Book404 extends LitElement {
+  render({ active }) {
+    // Don't render if the page is not active.
+    if (!active) {
+      return;
+    }
 
-class Book404 extends PageViewElement {
-  render() {
     updateMetadata({
       title: `Page Not Found - Books`,
       description: 'Page not found'
@@ -35,6 +39,12 @@ class Book404 extends PageViewElement {
         </p>
       </section>
     `;
+  }
+
+  static get properties() {
+    return {
+      active: Boolean
+    };
   }
 }
 

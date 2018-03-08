@@ -1,3 +1,6 @@
+import { LitElement, html, updateMetadata } from './book-app.js';
+
+
 /**
 @license
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -8,15 +11,16 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js'
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
-import { PageViewElement } from './page-view-element.js';
+class BookAbout extends LitElement {
+  render({ active }) {
+    // Don't render if the page is not active.
+    if (!active) {
+      return;
+    }
 
-class Book404 extends PageViewElement {
-  render() {
     updateMetadata({
-      title: `Page Not Found - Books`,
-      description: 'Page not found'
+      title: 'About - Books',
+      description: 'About page'
     });
 
     return html`
@@ -28,14 +32,16 @@ class Book404 extends PageViewElement {
         }
       </style>
 
-      <section>
-        <h2>Oops! You hit a 404</h2>
-        <p>The page you're looking for doesn't seem to exist. Head back
-           <a href="/">home</a> and try again?
-        </p>
-      </section>
+      <p>Google Books PWA</p>
+      <p><a href="http://books.google.com" target="_blank" rel="noopener">Visit the regular Google Books site</a></p>
     `;
+  }
+
+  static get properties() {
+    return {
+      active: Boolean
+    };
   }
 }
 
-window.customElements.define('book-404', Book404);
+window.customElements.define('book-about', BookAbout);

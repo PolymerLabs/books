@@ -27,23 +27,18 @@ export { searchBooks } from '../actions/books.js';
 
 import { refreshPage } from '../actions/app.js';
 
+import { PageViewElement } from './page-view-element.js';
 import { responsiveWidth, responsiveWiderWidth } from './shared-styles.js';
 import './book-image.js';
 import './book-featured-item.js';
 import './book-item.js';
 import './book-offline.js';
 
-class BookExplore extends connect(store)(LitElement) {
-  render({active, query, items, showOffline}) {
-    // Don't render if the page is not active.
-    if (!active) {
-      return;
-    }
-
+class BookExplore extends connect(store)(PageViewElement) {
+  render({query, items, showOffline}) {
     updateMetadata({
       title: `${query ? `${query} - ` : ''}Books`,
-      description: 'Search for books',
-      url: document.location.href
+      description: 'Search for books'
     });
 
     let featuredItem = items[0];
@@ -161,7 +156,6 @@ class BookExplore extends connect(store)(LitElement) {
   }
 
   static get properties() { return {
-    active: Boolean,
     query: String,
     items: Array,
     showOffline: Boolean

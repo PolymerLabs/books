@@ -1,3 +1,7 @@
+import { LitElement, html, connect, updateMetadata, store, book, bookSelector } from './book-app.js';
+
+export { fetchBook } from 'file:///Users/ffu/Work/www/misc/books/src/actions/book.js';
+
 /**
 @license
 Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -7,27 +11,12 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { connect } from '../../node_modules/pwa-helpers/connect-mixin.js';
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
-
-// This element is connected to the redux store.
-import { store } from '../store.js';
-
-// We are lazy loading its reducer.
-import { book, bookSelector } from '../reducers/book.js';
 store.addReducers({
   book
 });
 
-// We want to export this action so it can be called after import() returns the module
-export { fetchBook } from '../actions/book.js';
-
-import { PageViewElement } from './page-view-element.js';
-
 let initCalled;
-const callbackPromise = new Promise((r) => window.__initGoogleBooks = r);
+const callbackPromise = new Promise(r => window.__initGoogleBooks = r);
 
 function loadGoogleBooks() {
   if (!initCalled) {
@@ -39,8 +28,13 @@ function loadGoogleBooks() {
   return callbackPromise;
 }
 
-class BookViewer extends connect(store)(PageViewElement) {
-  render({item}) {
+class BookViewer extends connect(store)(LitElement) {
+  render({ active, item }) {
+    // Don't render if the page is not active.
+    if (!active) {
+      return;
+    }
+
     if (item) {
       const info = item.volumeInfo;
       updateMetadata({
@@ -74,10 +68,13 @@ class BookViewer extends connect(store)(PageViewElement) {
     `;
   }
 
-  static get properties() { return {
-    bookId: String,
-    item: Object
-  }}
+  static get properties() {
+    return {
+      active: Boolean,
+      bookId: String,
+      item: Object
+    };
+  }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
@@ -85,7 +82,7 @@ class BookViewer extends connect(store)(PageViewElement) {
     this.item = bookSelector(state);
   }
 
-  didRender({bookId, active}, changed, oldProps) {
+  didRender({ bookId, active }, changed, oldProps) {
     // google.books.Viewer requires the viewer to be visible when load(bookId) is called
     if (changed && 'active' in changed && active && bookId) {
       loadGoogleBooks().then(() => {
@@ -97,3 +94,9 @@ class BookViewer extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('book-viewer', BookViewer);
+
+var bookViewer = {
+  fetchBook: fetchBook
+};
+
+export { bookViewer as $bookViewer };
