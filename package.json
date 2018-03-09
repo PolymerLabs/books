@@ -9,7 +9,12 @@
   "scripts": {
     "start": "polymer serve --entrypoint index.html",
     "test": "mocha test/ --timeout=10000",
-    "regen-test-baseline": "mocha test/screenshots-baseline/regenerate.js --timeout=10000"
+    "regen-test-baseline": "mocha test/screenshots-baseline/regenerate.js --timeout=10000",
+    "bundle": "node ../polymer-bundler/lib/bin/polymer-bundler.js --out-dir bundled --shell src/components/book-app.js src/components/book-app.js",
+    "minify": "babel bundled --out-dir dist",
+    "copy": "cp index.html manifest.json service-worker.js dist && mkdir -p dist/node_modules/@webcomponents && cp -r node_modules/@webcomponents/webcomponentsjs dist/node_modules/@webcomponents",
+    "clean": "rm -rf bundled dist",
+    "build": "npm run clean && npm run bundle && npm run minify && npm run copy"
   },
   "dependencies": {
     "@0xcda7a/redux-es6": "^3.7.2",
