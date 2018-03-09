@@ -21,7 +21,9 @@ $ npm i
 $ polymer serve # or similar that serve index.html for all routes
 ```
 
-## Build
+## Build and deploy
 ```bash
-# TBD
+$ git checkout deploy # checkout the deploy branch
+$ npm run build
+$ gcloud app deploy --project <project>
 ```
