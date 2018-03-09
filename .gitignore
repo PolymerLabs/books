@@ -1,5 +1,8 @@
 build/
+bundled/
+dist/
 node_modules/
 test/screenshots-current
 yarn.lock
 .DS_Store
+*.pyc

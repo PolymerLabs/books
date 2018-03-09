@@ -1,0 +1,60 @@
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+
+- url: /images
+  static_dir: images
+  secure: always
+
+- url: /
+  static_files: dist/index.html
+  upload: dist/index.html
+  secure: always
+  http_headers:
+    Link:
+      </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
+      </src/components/book-app.js>;rel=modulepreload;as=script,
+      </src/components/book-home.js>;rel=modulepreload;as=script
+
+- url: /explore
+  static_files: dist/index.html
+  upload: dist/index.html
+  secure: always
+  http_headers:
+    Link:
+      </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
+      </src/components/book-app.js>;rel=modulepreload;as=script,
+      </src/components/book-explore.js>;rel=modulepreload;as=script
+
+- url: /detail/.*
+  static_files: dist/index.html
+  upload: dist/index.html
+  secure: always
+  http_headers:
+    Link:
+      </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
+      </src/components/book-app.js>;rel=modulepreload;as=script,
+      </src/components/book-detail.js>;rel=modulepreload;as=script
+
+- url: /viewer/.*
+  static_files: dist/index.html
+  upload: dist/index.html
+  secure: always
+  http_headers:
+    Link:
+      </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
+      </src/components/book-app.js>;rel=modulepreload;as=script,
+      </src/components/book-viewer.js>;rel=modulepreload;as=script
+
+- url: /(.*)
+  static_files: dist/\1
+  upload: dist/.*
+  secure: always
+
+skip_files:
+- bundled/
+- lib/
+- node_modules/
+- src/
