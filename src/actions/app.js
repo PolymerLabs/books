@@ -33,7 +33,7 @@ export const navigate = (location) => (dispatch) => {
   dispatch(loadPage(page, query, bookId));
 };
 
-const loadPage = (page, query, bookId) => async (dispatch) => {
+const loadPage = (page, query, bookId) => async (dispatch, getState) => {
   let module;
   switch(page) {
     case 'home':
@@ -51,12 +51,20 @@ const loadPage = (page, query, bookId) => async (dispatch) => {
     case 'detail':
       module = await import('../components/book-detail.js');
       // Fetch the book info for the given book id.
-      dispatch(module.fetchBook(bookId));
+      await dispatch(module.fetchBook(bookId));
+      // Wait for to check if the book id is valid.
+      if (fetchBookFailed(getState().book)) {
+        page = '404';
+      }
       break;
     case 'viewer':
       module = await import('../components/book-viewer.js');
       // Fetch the book info for the given book id.
-      dispatch(module.fetchBook(bookId));
+      await dispatch(module.fetchBook(bookId));
+      // Wait for to check if book id is valid.
+      if (fetchBookFailed(getState().book)) {
+        page = '404';
+      }
       break;
     case 'about':
       await import('../components/book-about.js');
@@ -64,7 +72,10 @@ const loadPage = (page, query, bookId) => async (dispatch) => {
     default:
       // Nothing matches, set page to '404'.
       page = '404';
-      await import('../components/book-404.js');
+  }
+
+  if (page === '404') {
+    import('../components/book-404.js');
   }
 
   dispatch(updatePage(page));
@@ -81,6 +92,10 @@ const updatePage = (page) => {
     type: UPDATE_PAGE,
     page
   };
+}
+
+const fetchBookFailed = (book) => {
+  return !book.isFetching && book.failure;
 }
 
 export const openDrawer = () => {

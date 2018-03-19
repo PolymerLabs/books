@@ -30,6 +30,19 @@ class BookImage extends LitElement {
           background-position: center;
         }
 
+        :host([blur-up]) #placeholder {
+          background-position: center 10%;
+          background-size: 70%;
+          background-repeat: no-repeat;
+          filter: blur(5px);
+          will-change: filter;
+        }
+
+        :host([blur-up]) #placeholder[loaded] {
+          filter: blur(0);
+          transition: 0.2s filter ease-in-out;
+        }
+
         img {
           position: absolute;
           top: 0;
@@ -49,14 +62,14 @@ class BookImage extends LitElement {
           max-width: none;
         }
 
-        img.loaded {
+        #placeholder[loaded] img {
           opacity: 1;
           transition: 0.5s opacity;
         }
       </style>
 
-      <div id="placeholder" style$="${placeholder ? `background-image: url('${placeholder}')` : ''}">
-        <img src="${src}" alt="${alt}" class$="${_loaded ? 'loaded' : ''}"
+      <div id="placeholder" style$="${placeholder ? `background-image: url('${placeholder}')` : ''}" loaded?="${_loaded}">
+        <img src="${src}" alt="${alt}"
             on-load="${() => this._loaded = true}"
             on-error="${() => this._onImgError()}">
       </div>

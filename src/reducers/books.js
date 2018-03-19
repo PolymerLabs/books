@@ -19,6 +19,7 @@ export const books = (state = {query: null}, action) => {
       return {
         ...state,
         query: action.query,
+        items: null, // reset items
         failure: false,
         isFetching: true
       };
@@ -37,7 +38,7 @@ export const books = (state = {query: null}, action) => {
     case FAIL_BOOKS:
       return {
         ...state,
-        items: {},
+        items: null,
         failure: true,
         isFetching: false
       };
@@ -47,10 +48,3 @@ export const books = (state = {query: null}, action) => {
 }
 
 export const itemsSelector = state => state.books && state.books.items;
-
-export const itemsArraySelector = createSelector(
-  itemsSelector,
-  (items) => {
-    return items ? Object.values(items) : [];
-  }
-)

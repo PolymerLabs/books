@@ -19,11 +19,20 @@ export const fetchBook = (id) => (dispatch, getState) => {
   if (book) {
     // book found in state.books.items
     dispatch(receiveBook(id));
+    // let the calling code know there's nothing to wait for.
+    return Promise.resolve();
   } else {
-    // fetch book data given the book id
-    fetch(`https://www.googleapis.com/books/v1/volumes/${id}`)
+    // fetch book data given the book id.
+    // also return a promise to wait for.
+    return fetch(`https://www.googleapis.com/books/v1/volumes/${id}`)
       .then(res => res.json())
-      .then(data => dispatch(receiveBook(id, data)))
+      .then(data => {
+        if (data.error) {
+          dispatch(failBook(id));
+        } else {
+          dispatch(receiveBook(id, data));
+        }
+      })
       .catch((e) => dispatch(failBook(id)));
   }
 };
@@ -44,7 +53,6 @@ const receiveBook = (id, item) => {
 };
 
 const failBook = (id) => {
-  debugger;
   return {
     type: FAIL_BOOK,
     id

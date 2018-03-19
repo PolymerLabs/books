@@ -81,7 +81,7 @@ class BookApp extends connect(store)(LitElement) {
         background-color: var(--app-background-color);
       }
 
-      [main-title] {
+      [main-title] > a {
         font-size: 18px;
         font-weight: bold;
         letter-spacing: 0.1em;
@@ -183,7 +183,7 @@ class BookApp extends connect(store)(LitElement) {
         <button class="menu-btn" hidden?="${hideMenuBtn}" on-click="${_ => this._drawerOpenedChanged(true)}">${menuIcon}</button>
         <a class="back-btn" hidden?="${!hideMenuBtn}"
             href="${page === 'detail' ? `/explore?q=${query}` : `/detail/${bookId}`}">${backIcon}</a>
-        <a main-title href="/explore">${appTitle}</a>
+        <div main-title><a href="/explore">${appTitle}</a></div>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
@@ -247,10 +247,10 @@ class BookApp extends connect(store)(LitElement) {
 
   ready() {
     super.ready();
-    installRouter((location) => this._locationChanged(location));
+    installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
     installMediaQueryWatcher(`(min-width: ${responsiveWidth})`,
-        (matches) => this._layoutChanged(matches));
+        (matches) => store.dispatch(updateWideLayout(matches)));
     this._readied = true;
   }
 
@@ -264,21 +264,12 @@ class BookApp extends connect(store)(LitElement) {
     this.bookId = state.book && state.book.id;
   }
 
-  _locationChanged(location) {
-    store.dispatch(navigate(location));
-  }
-
   _offlineChanged(offline) {
     store.dispatch(updateOffline(offline));
-
     // Don't show the snackbar on the first load of the page.
     if (this._readied) {
       store.dispatch(showSnackbar());
     }
-  }
-
-  _layoutChanged(isWideLayout) {
-    store.dispatch(updateWideLayout(isWideLayout));
   }
 
   _drawerOpenedChanged(opened) {
@@ -288,11 +279,10 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   _search(e) {
-    // TODO: router should provide a helper to handle this?
-    let params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams();
     params.set('q', e.target.value);
     window.history.pushState({}, '', `explore?${params.toString()}`);
-    this._locationChanged(window.location);
+    store.dispatch(navigate(window.location));
   }
 }
 

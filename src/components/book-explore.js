@@ -17,7 +17,7 @@ import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
 import { store } from '../store.js';
 
 // We are lazy loading its reducer.
-import { books, itemsArraySelector } from '../reducers/books.js';
+import { books } from '../reducers/books.js';
 store.addReducers({
   books
 });
@@ -30,7 +30,6 @@ import { refreshPage } from '../actions/app.js';
 import { PageViewElement } from './page-view-element.js';
 import { responsiveWidth, responsiveWiderWidth } from './shared-styles.js';
 import './book-image.js';
-import './book-featured-item.js';
 import './book-item.js';
 import './book-offline.js';
 
@@ -41,8 +40,8 @@ class BookExplore extends connect(store)(PageViewElement) {
       description: 'Search for books'
     });
 
-    let featuredItem = items[0];
-    let otherItems = items.slice(1);
+    // actual items or placeholder items if the items haven't loaded yet.
+    const itemList = items ? Object.values(items) : [{},{},{},{},{}];
 
     return html`
       <style>
@@ -51,7 +50,7 @@ class BookExplore extends connect(store)(PageViewElement) {
         }
 
         .books {
-          width: 100%;
+          max-width: 432px;
           margin: 0 auto;
           padding: 8px;
           box-sizing: border-box;
@@ -62,7 +61,9 @@ class BookExplore extends connect(store)(PageViewElement) {
         li {
           display: inline-block;
           position: relative;
-          width: calc(50% - 16px);
+          width: calc(100% - 16px);
+          max-width: 400px;
+          min-height: 240px;
           margin: 8px;
           font-size: 14px;
           vertical-align: top;
@@ -77,17 +78,7 @@ class BookExplore extends connect(store)(PageViewElement) {
         li::after {
           content: '';
           display: block;
-          padding-top: 190%;
-        }
-
-        li.featured {
-          width: calc(100% - 16px);
-        }
-
-        li.featured::after {
-          content: '';
-          display: block;
-          padding-top: 60%;
+          padding-top: 65%;
         }
 
         .books-bg {
@@ -100,48 +91,26 @@ class BookExplore extends connect(store)(PageViewElement) {
           display: none !important;
         }
 
-        /* Wide layout: 3 columns */
+        /* Wide Layout */
         @media (min-width: ${responsiveWidth}) {
-          .books {
-            width: 616px;
-            padding: 16px 0;
-          }
-
           li {
-            width: calc(100% / 3 - 16px);
-          }
-
-          li.featured {
-            width: calc(100% / 3 * 2 - 16px);
-          }
-
-          li.featured::after {
-            padding-top: calc(95% - 16px);
+            height: 364px;
           }
         }
 
-        /* Wide layout: 4 columns */
+        /* Wider layout: 2 columns */
         @media (min-width: ${responsiveWiderWidth}) {
           .books {
-            width: 816px;
-          }
-
-          li {
-            width: calc(25% - 16px);
-          }
-
-          li.featured {
-            width: calc(50% - 16px);
+            width: 832px;
+            max-width: none;
+            padding: 16px 0;
           }
         }
       </style>
 
       <section hidden="${showOffline}">
-        <ul class="books" hidden="${!query || items.length === 0}">
-          <li class="featured">
-            <book-featured-item item="${featuredItem}"></book-featured-item>
-          </li>
-          ${repeat(otherItems, (item) => html`
+        <ul class="books" hidden="${!query}">
+          ${repeat(itemList, (item) => html`
             <li>
               <book-item item="${item}"></book-item>
             </li>
@@ -164,9 +133,7 @@ class BookExplore extends connect(store)(PageViewElement) {
   // This is called every time something is updated in the store.
   stateChanged(state) {
     this.query = state.books.query;
-    // Using memorized selector to avoid calling Object.values(state.books.items)
-    // every time the state is changed.
-    this.items = itemsArraySelector(state);
+    this.items = state.books && state.books.items;
     this.showOffline = state.app.offline && state.books.failure;
   }
 }

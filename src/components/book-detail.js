@@ -32,6 +32,7 @@ import { PageViewElement } from './page-view-element.js';
 import { responsiveWidth, BookButtonStyle } from './shared-styles.js';
 import './book-rating.js';
 import './book-offline.js';
+import './book-image.js';
 
 class BookDetail extends connect(store)(PageViewElement) {
   render({item, showOffline}) {
@@ -42,17 +43,20 @@ class BookDetail extends connect(store)(PageViewElement) {
 
     const info = item.volumeInfo;
     const accessInfo = item.accessInfo;
+    const title = info.title;
     const author = info.authors && info.authors.join(', ');
     const date = (new Date(info.publishedDate)).getFullYear();
     const pageCount = info.pageCount;
+    const rating = info.averageRating;
     const ratingsCount = info.ratingsCount;
     const publisher = info.publisher;
-    const thumbnail = info.imageLinks.thumbnail.replace('http', 'https');
+    const thumbnail = info.imageLinks.thumbnail.replace('http', 'https').replace('&edge=curl', '');
+    const poster = thumbnail.replace('&zoom=1', '');
     const categories = info.categories || [];
     const identifiers = info.industryIdentifiers || [];
 
     updateMetadata({
-      title: `${info.title} - Books`,
+      title: `${title} - Books`,
       description: info.description,
       img: thumbnail
     });
@@ -88,7 +92,7 @@ class BookDetail extends connect(store)(PageViewElement) {
           width: 100px;
         }
 
-        .cover > img {
+        .cover > book-image {
           display: block;
           position: absolute;
           top: 0;
@@ -204,10 +208,10 @@ class BookDetail extends connect(store)(PageViewElement) {
       <section hidden="${showOffline}">
         <div class="info">
           <div class="cover" hero>
-            <img src="${thumbnail}">
+            <book-image blur-up src="${poster}" placeholder="${thumbnail}"></book-image>
           </div>
           <div class="info-desc">
-            <h2 class="title">${info.title}</h2>
+            <h2 class="title">${title}</h2>
             <div class="info-item" hidden="${!author}">${author} - ${date}</div>
             <div class="info-item" hidden="${!pageCount}" desktop>${pageCount} pages</div>
             <div class="info-item" hidden="${!publisher}" desktop>${publisher} - publisher</div>
@@ -218,7 +222,7 @@ class BookDetail extends connect(store)(PageViewElement) {
           </div>
         </div>
         <div class="rating-container">
-          <book-rating rating="${info.averageRating}"></book-rating>
+          <book-rating rating="${rating}"></book-rating>
           <span>(${ratingsCount || 0} ${ratingsCount == 1 ? 'review' : 'reviews'})</span>
         </div>
         <div class="desc">
