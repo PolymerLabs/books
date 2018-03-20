@@ -15,8 +15,8 @@ handlers:
   http_headers:
     Link:
       </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
-      </src/components/book-app.js>;rel=modulepreload;as=script,
-      </src/components/book-home.js>;rel=modulepreload;as=script
+      </src/components/book-app.js>;rel=preload;as=script,
+      </src/components/book-home.js>;rel=preload;as=script
 
 - url: /explore
   static_files: dist/index.html
@@ -25,8 +25,8 @@ handlers:
   http_headers:
     Link:
       </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
-      </src/components/book-app.js>;rel=modulepreload;as=script,
-      </src/components/book-explore.js>;rel=modulepreload;as=script
+      </src/components/book-app.js>;rel=preload;as=script,
+      </src/components/book-explore.js>;rel=preload;as=script
 
 - url: /detail/.*
   static_files: dist/index.html
@@ -35,8 +35,8 @@ handlers:
   http_headers:
     Link:
       </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
-      </src/components/book-app.js>;rel=modulepreload;as=script,
-      </src/components/book-detail.js>;rel=modulepreload;as=script
+      </src/components/book-app.js>;rel=preload;as=script,
+      </src/components/book-detail.js>;rel=preload;as=script
 
 - url: /viewer/.*
   static_files: dist/index.html
@@ -45,8 +45,8 @@ handlers:
   http_headers:
     Link:
       </node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js>;rel=preload;as=script,
-      </src/components/book-app.js>;rel=modulepreload;as=script,
-      </src/components/book-viewer.js>;rel=modulepreload;as=script
+      </src/components/book-app.js>;rel=preload;as=script,
+      </src/components/book-viewer.js>;rel=preload;as=script
 
 - url: /(.*)
   static_files: dist/\1

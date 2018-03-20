@@ -13,8 +13,9 @@
     "bundle": "node ../polymer-bundler/lib/bin/polymer-bundler.js --out-dir bundled --shell src/components/book-app.js src/components/book-app.js",
     "minify": "babel bundled --out-dir dist",
     "copy": "cp index.html manifest.json service-worker.js dist && mkdir -p dist/node_modules/@webcomponents && cp -r node_modules/@webcomponents/webcomponentsjs dist/node_modules/@webcomponents",
+    "sw": "npx workbox generate:sw",
     "clean": "rm -rf bundled dist",
-    "build": "npm run clean && npm run bundle && npm run minify && npm run copy"
+    "build": "npm run clean && npm run bundle && npm run minify && npm run copy && npm run sw"
   },
   "dependencies": {
     "@0xcda7a/redux-es6": "^3.7.2",
@@ -26,14 +27,10 @@
     "reselect": "^3.0.1"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "mocha": "^5.0.0",
-    "puppeteer": "^1.0.0",
-    "pixelmatch": "^4.0.2",
-    "polyserve": "^0.24.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-minify": "^0.2.0"
+    "babel-preset-minify": "^0.2.0",
+    "workbox-cli": "^2.1.2"
   }
 }
