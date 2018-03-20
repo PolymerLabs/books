@@ -25,10 +25,9 @@ export const navigate = (location) => (dispatch) => {
   const page = parts[0] || 'home';
   // book id is in the path: /detail/{bookId}
   const bookId = parts[1];
-  // Extract params from location
-  const params = new URLSearchParams(location.search.substring(1));
-  // query is extracted from the query params: /explore?q={query}
-  const query = params.get('q');
+  // query is extracted from the search string: /explore?q={query}
+  const match = RegExp('[?&]q=([^&]*)').exec(location.search);
+  const query = match && decodeURIComponent(match[1].replace(/\+/g, ' '))
 
   dispatch(loadPage(page, query, bookId));
 };

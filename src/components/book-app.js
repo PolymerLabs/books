@@ -180,14 +180,14 @@ class BookApp extends connect(store)(LitElement) {
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" hidden?="${hideMenuBtn}" on-click="${_ => this._drawerOpenedChanged(true)}">${menuIcon}</button>
-        <a class="back-btn" hidden?="${!hideMenuBtn}"
+        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}" on-click="${_ => this._drawerOpenedChanged(true)}">${menuIcon}</button>
+        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}"
             href="${page === 'detail' ? `/explore?q=${query}` : `/detail/${bookId}`}">${backIcon}</a>
         <div main-title><a href="/explore">${appTitle}</a></div>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" autofocus type="search" value="${query}" on-change="${(e) => this._search(e)}">
+          <input slot="input" aria-label="Search Books" autofocus type="search" value="${query}" on-change="${(e) => this._search(e)}">
         </book-input-decorator>
       </app-toolbar>
     </app-header>
@@ -279,9 +279,7 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   _search(e) {
-    const params = new URLSearchParams();
-    params.set('q', e.target.value);
-    window.history.pushState({}, '', `explore?${params.toString()}`);
+    window.history.pushState({}, '', `explore?q=${e.target.value}`);
     store.dispatch(navigate(window.location));
   }
 }
