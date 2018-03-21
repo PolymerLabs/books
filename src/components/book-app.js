@@ -249,7 +249,7 @@ class BookApp extends connect(store)(LitElement) {
     super.ready();
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
-    installMediaQueryWatcher(`(min-width: ${responsiveWidth})`,
+    installMediaQueryWatcher(`(min-width: ${responsiveWidth}) and (min-height: ${responsiveWidth})`,
         (matches) => store.dispatch(updateWideLayout(matches)));
     this._readied = true;
   }
