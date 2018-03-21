@@ -1,12 +1,13 @@
 ![built_with pwa–starter–kit_](https://img.shields.io/badge/built_with-pwa–starter–kit_-blue.svg)
 
-![books screenshot](https://user-images.githubusercontent.com/116360/37737528-387678d8-2d11-11e8-8079-6a4025e7ed8e.jpg)
-
 # Books PWA
 
 Books is a simple Google Books PWA. It uses [Google Books API](https://developers.google.com/books/docs/v1/reference/volumes/list) to search for books and [Embedded Viewer API](https://developers.google.com/books/docs/viewer/reference) to display book content.
 
 The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
+
+![books screenshot](https://user-images.githubusercontent.com/116360/37737528-387678d8-2d11-11e8-8079-6a4025e7ed8e.jpg)
+
 ## Features/highlights
 
 - Show a basic search-list-detail flow.
