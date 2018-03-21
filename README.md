@@ -14,8 +14,7 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 - Use `fetch` to send request to Google Books API.
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
-- Shimmer placeholder while content is loading.
-
+- Shimmer placeholder while content is loading.  
     ![shimmer](https://user-images.githubusercontent.com/116360/37739056-27dae81a-2d16-11e8-91c5-d4c724d6ced1.gif)
 - Update the browser URL programmatically without causing page reload. In the app, we want to append query param to the URL when the search input’s value is committed.
 - Scroll to top on page change.
