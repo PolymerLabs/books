@@ -1,6 +1,6 @@
 ![built_with pwa–starter–kit_](https://img.shields.io/badge/built_with-pwa–starter–kit_-blue.svg)
 
-![books screenshot](https://user-images.githubusercontent.com/116360/37737179-43ce0c42-2d10-11e8-8491-a3c933c7bc7b.jpg)
+![books screenshot](https://user-images.githubusercontent.com/116360/37737528-387678d8-2d11-11e8-8079-6a4025e7ed8e.jpg)
 
 # Books PWA
 
@@ -13,6 +13,9 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 - Use `fetch` to send request to Google Books API.
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
+- Shimmer placeholder while content is loading.
+
+    ![shimmer](https://user-images.githubusercontent.com/116360/37739056-27dae81a-2d16-11e8-91c5-d4c724d6ced1.gif)
 - Update the browser URL programmatically without causing page reload. In the app, we want to append query param to the URL when the search input’s value is committed.
 - Scroll to top on page change.
 - `<book-rating>`: Simple rating element.
