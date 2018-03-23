@@ -6,7 +6,7 @@ Books is a simple Google Books PWA. It uses [Google Books API](https://developer
 
 The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
 
-![books screenshot](https://user-images.githubusercontent.com/116360/37745432-09f2c9be-2d32-11e8-89a4-6102867fab5e.jpg)
+![books screenshot](https://user-images.githubusercontent.com/116360/37804470-9fe1d1bc-2df1-11e8-9751-c073da685b40.jpg)
 
 ## Features/highlights
 
