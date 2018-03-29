@@ -8,7 +8,7 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-import { createSelector } from '../../node_modules/reselect/src/index.js';
+import { createSelector } from 'reselect';
 import { itemsSelector } from './books.js';
 import {
   REQUEST_BOOK, RECEIVE_BOOK, FAIL_BOOK

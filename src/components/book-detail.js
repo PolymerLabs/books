@@ -8,11 +8,11 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { repeat } from '../../node_modules/lit-html/lib/repeat.js';
-import { unsafeHTML } from '../../node_modules/lit-html/lib/unsafe-html.js';
-import { connect } from '../../node_modules/pwa-helpers/connect-mixin.js';
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
+import { html } from '@polymer/lit-element/lit-element.js';
+import { repeat } from 'lit-html/lib/repeat.js';
+import { unsafeHTML } from 'lit-html/lib/unsafe-html.js';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // This element is connected to the redux store.
 import { store } from '../store.js';
