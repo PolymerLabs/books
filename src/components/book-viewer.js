@@ -40,9 +40,9 @@ function loadGoogleBooks() {
 }
 
 class BookViewer extends connect(store)(PageViewElement) {
-  render({item}) {
-    if (item) {
-      const info = item.volumeInfo;
+  render({ _item }) {
+    if (_item) {
+      const info = _item.volumeInfo;
       updateMetadata({
         title: `${info.title} - Books`,
         description: info.description,
@@ -75,22 +75,22 @@ class BookViewer extends connect(store)(PageViewElement) {
   }
 
   static get properties() { return {
-    bookId: String,
-    item: Object
+    _bookId: String,
+    _item: Object
   }}
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this.bookId = state.book.id;
-    this.item = bookSelector(state);
+    this._bookId = state.book.id;
+    this._item = bookSelector(state);
   }
 
-  didRender({bookId, active}, changed, oldProps) {
-    // google.books.Viewer requires the viewer to be visible when load(bookId) is called
-    if (changed && 'active' in changed && active && bookId) {
+  didRender({ _bookId, active }, changed, oldProps) {
+    // google.books.Viewer requires the viewer to be visible when load(_bookId) is called
+    if (changed && 'active' in changed && active && _bookId) {
       loadGoogleBooks().then(() => {
         this._viewer = new google.books.DefaultViewer(this.shadowRoot.querySelector('#viewer'));
-        this._viewer.load(bookId);
+        this._viewer.load(_bookId);
       });
     }
   }

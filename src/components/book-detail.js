@@ -40,14 +40,14 @@ import './book-offline.js';
 import './book-image.js';
 
 class BookDetail extends connect(store)(PageViewElement) {
-  render({item, favorites, lastVisitedListPage, showOffline, isSignedIn}) {
+  render({_item, _favorites, _lastVisitedListPage, _showOffline, _isSignedIn}) {
     // Don't render if there is no item.
-    if (!item) {
+    if (!_item) {
       return;
     }
 
-    const info = item.volumeInfo;
-    const accessInfo = item.accessInfo;
+    const info = _item.volumeInfo;
+    const accessInfo = _item.accessInfo;
     const title = info.title;
     const author = info.authors && info.authors.join(', ');
     const date = (new Date(info.publishedDate)).getFullYear();
@@ -59,7 +59,7 @@ class BookDetail extends connect(store)(PageViewElement) {
     const poster = thumbnail.replace('&zoom=1', '');
     const categories = info.categories || [];
     const identifiers = info.industryIdentifiers || [];
-    const isFavorite = favorites && !!favorites[item.id];
+    const isFavorite = _favorites && !!_favorites[_item.id];
 
     updateMetadata({
       title: `${title} - Books`,
@@ -239,7 +239,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden="${showOffline}">
+      <section hidden="${_showOffline}">
         <div class="info">
           <div class="cover" hero>
             <book-image blur-up src="${poster}" placeholder="${thumbnail}"></book-image>
@@ -250,13 +250,13 @@ class BookDetail extends connect(store)(PageViewElement) {
             <div class="info-item" hidden="${!pageCount}" desktop>${pageCount} pages</div>
             <div class="info-item" hidden="${!publisher}" desktop>${publisher} - publisher</div>
             <div class="flex"></div>
-            <div class="fav-btn-container" hidden="${lastVisitedListPage === 'favorites'}">
-              <button class="fav-button" on-click="${() => store.dispatch(saveFavorite(item, isFavorite))}" hidden="${!isSignedIn}">
+            <div class="fav-btn-container" hidden="${_lastVisitedListPage === 'favorites'}">
+              <button class="fav-button" on-click="${() => store.dispatch(saveFavorite(_item, isFavorite))}" hidden="${!_isSignedIn}">
                 ${isFavorite ? favoriteIcon : favoriteBorderIcon} ${isFavorite ? 'Added to Favorites' : 'Add to Favorites'}
               </button>
             </div>
             <div class="preview-btn-container">
-              <a href="/viewer/${item.id}" class="book-button" hidden="${!accessInfo.embeddable}">PREVIEW</a>
+              <a href="/viewer/${_item.id}" class="book-button" hidden="${!accessInfo.embeddable}">PREVIEW</a>
             </div>
           </div>
         </div>
@@ -293,25 +293,25 @@ class BookDetail extends connect(store)(PageViewElement) {
         </div>
       </section>
 
-      <book-offline hidden="${!showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 
   static get properties() { return {
-    item: Object,
-    favorites: Object,
-    lastVisitedListPage: Boolean,
-    showOffline: Boolean,
-    isSignedIn: Boolean
+    _item: Object,
+    _favorites: Object,
+    _lastVisitedListPage: Boolean,
+    _showOffline: Boolean,
+    _isSignedIn: Boolean
   }}
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this.item = bookSelector(state);
-    this.favorites = state.favorites && state.favorites.items;
-    this.lastVisitedListPage = state.app.lastVisitedListPage;
-    this.showOffline = state.app.offline && state.book.failure;
-    this.isSignedIn = !!state.auth.user;
+    this._item = bookSelector(state);
+    this._favorites = state.favorites && state.favorites.items;
+    this._lastVisitedListPage = state.app.lastVisitedListPage;
+    this._showOffline = state.app.offline && state.book.failure;
+    this._isSignedIn = !!state.auth.user;
   }
 }
 

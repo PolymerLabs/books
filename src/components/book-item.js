@@ -15,7 +15,7 @@ import './book-image.js';
 import './book-rating.js';
 
 class BookItem extends LitElement {
-  render({item}) {
+  render({ item }) {
     const info = item && item.volumeInfo;
     const id = item ? item.id : '';
     const title = info ? info.title : '';

@@ -12,7 +12,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { searchIcon } from './book-icons.js';
 
 class BookInputDecorator extends LitElement {
-  render({focused}) {
+  render({ _focused }) {
     return html`
       <style>
         :host {
@@ -73,7 +73,7 @@ class BookInputDecorator extends LitElement {
       </style>
 
       <div class="icon">${searchIcon}</div>
-      <div class="decorator" focused?="${focused}">
+      <div class="decorator" focused?="${_focused}">
         <slot id="inputSlot" name="input"></slot>
         <div class="underline"></div>
       </div>
@@ -86,8 +86,8 @@ class BookInputDecorator extends LitElement {
     await this.renderComplete;
     // Assume the input is in the slot
     this._input = this.shadowRoot.querySelector('#inputSlot').assignedNodes({flatten: true})[0];
-    this._input.addEventListener('focus', () => this._setProperty('focused', true));
-    this._input.addEventListener('blur', () => this._setProperty('focused', false));
+    this._input.addEventListener('focus', () => this._focused = true);
+    this._input.addEventListener('blur', () => this._focused = false);
   }
 }
 

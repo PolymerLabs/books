@@ -28,18 +28,31 @@ import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, cl
 import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  render({page, appTitle, subTitle, drawerOpened, snackbarOpened, lastVisitedListPage, offline, wideLayout, query, bookId, authInitialized, user}) {
+  render({
+    appTitle,
+    _page,
+    _subTitle,
+    _lastVisitedListPage,
+    _offline,
+    _wideLayout,
+    _drawerOpened,
+    _snackbarOpened,
+    _authInitialized,
+    _user,
+    _query,
+    _bookId }) {
+
     // Anything that's related to rendering should be done in here.
 
     // True to hide the menu button and show the back button.
-    const hideMenuBtn = page === 'detail' || page === 'viewer';
+    const hideMenuBtn = _page === 'detail' || _page === 'viewer';
     // True to hide the input.
-    const hideInput = !page || page === 'favorites' || page === 'about' || page === '404';
+    const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
     // True to make the search input aligns at the top inside the header instead of inside the main content.
-    const inputAtTop = !wideLayout || (page === 'explore' && query) || page === 'detail' || page === 'viewer';
+    const inputAtTop = !_wideLayout || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
     // back button href
-    const backHref = page === 'detail' ?
-        (lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${query}`) : `/detail/${bookId}`;
+    const backHref = _page === 'detail' ?
+        (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
 
     return html`
     <style>
@@ -170,11 +183,11 @@ class BookApp extends connect(store)(LitElement) {
         min-height: var(--app-main-content-min-height);
       }
 
-      .page {
+      ._page {
         display: none;
       }
 
-      .page[active] {
+      ._page[active] {
         display: block;
       }
 
@@ -201,63 +214,63 @@ class BookApp extends connect(store)(LitElement) {
             on-click="${() => this._drawerOpenedChanged(true)}">${menuIcon}</button>
         <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/explore">${appTitle}</a></div>
-        <button class="signin-btn" aria-label="Sign In" visible?="${authInitialized}"
-            on-click="${() =>  store.dispatch(user && user.imageUrl ? signOut() : signIn())}">
-          ${user && user.imageUrl ? html`<img src="${user.imageUrl}">` : accountIcon}
+        <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
+            on-click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
+          ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
         </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" aria-label="Search Books" autofocus type="search" value="${query}"
+          <input slot="input" aria-label="Search Books" autofocus type="search" value="${_query}"
               on-change="${(e) => this._search(e)}">
         </book-input-decorator>
-        <h4 class="subtitle" hidden="${!hideInput}">${subTitle}</h4>
+        <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
+    <app-drawer opened="${_drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
       <nav class="drawer-list" on-click="${e => this._drawerOpenedChanged(false)}">
-        <a selected?="${page === 'explore'}" href="/explore?q=${query}">Home</a>
-        <a selected?="${page === 'favorites'}" href="/favorites">Favorites</a>
-        <a selected?="${page === 'about'}" href="/about">About</a>
+        <a selected?="${_page === 'explore'}" href="/explore?q=${_query}">Home</a>
+        <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
+        <a selected?="${_page === 'about'}" href="/about">About</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main class="main-content">
-      <book-home class="page" active?="${page === 'home'}"></book-home>
-      <book-explore class="page" active?="${page === 'explore'}"></book-explore>
-      <book-detail class="page" active?="${page === 'detail'}"></book-detail>
-      <book-viewer class="page" active?="${page === 'viewer'}"></book-viewer>
-      <book-favorites class="page" active?="${page === 'favorites'}"></book-favorites>
-      <book-about class="page" active?="${page === 'about'}"></book-about>
-      <book-404 class="page" active?="${page === '404'}"></book-404>
+      <book-home class="_page" active?="${_page === 'home'}"></book-home>
+      <book-explore class="_page" active?="${_page === 'explore'}"></book-explore>
+      <book-detail class="_page" active?="${_page === 'detail'}"></book-detail>
+      <book-viewer class="_page" active?="${_page === 'viewer'}"></book-viewer>
+      <book-favorites class="_page" active?="${_page === 'favorites'}"></book-favorites>
+      <book-about class="_page" active?="${_page === 'about'}"></book-about>
+      <book-404 class="_page" active?="${_page === '404'}"></book-404>
     </main>
 
     <footer>
       <p>Made with &lt;3 by the Polymer team.</p>
     </footer>
 
-    <snack-bar active?="${snackbarOpened}">
-        You are now ${offline ? 'offline' : 'online'}.</snack-bar>
+    <snack-bar active?="${_snackbarOpened}">
+        You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 
   static get properties() {
     return {
-      page: String,
       appTitle: String,
-      subTitle: String,
-      drawerOpened: Boolean,
-      snackbarOpened: Boolean,
-      lastVisitedListPage: Boolean,
-      offline: Boolean,
-      wideLayout: Boolean,
-      query: String,
-      bookId: String,
-      authInitialized: Boolean,
-      user: Object
+      _page: String,
+      _subTitle: String,
+      _lastVisitedListPage: Boolean,
+      _offline: Boolean,
+      _wideLayout: Boolean,
+      _drawerOpened: Boolean,
+      _snackbarOpened: Boolean,
+      _authInitialized: Boolean,
+      _user: Object,
+      _query: String,
+      _bookId: String
     }
   }
 
@@ -269,7 +282,7 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   didRender(props, changed) {
-    if ('page' in changed) {
+    if ('_page' in changed) {
       window.scrollTo(0, 0);
     }
   }
@@ -284,21 +297,21 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    this.page = state.app.page;
-    this.subTitle = state.app.subTitle;
-    this.offline = state.app.offline;
-    this.wideLayout = state.app.wideLayout;
-    this.drawerOpened = state.app.drawerOpened;
-    this.snackbarOpened = state.app.snackbarOpened;
-    this.lastVisitedListPage = state.app.lastVisitedListPage;
-    this.query = state.books && state.books.query || '';
-    this.bookId = state.book && state.book.id;
-    this.authInitialized = state.auth.initialized;
-    this.user = state.auth.user;
+    this._page = state.app.page;
+    this._subTitle = state.app.subTitle;
+    this._lastVisitedListPage = state.app.lastVisitedListPage;
+    this._offline = state.app.offline;
+    this._wideLayout = state.app.wideLayout;
+    this._drawerOpened = state.app.drawerOpened;
+    this._snackbarOpened = state.app.snackbarOpened;
+    this._authInitialized = state.auth.initialized;
+    this._user = state.auth.user;
+    this._query = state.books && state.books.query || '';
+    this._bookId = state.book && state.book.id;
   }
 
   _offlineChanged(offline) {
-    const previousOffline = this.offline;
+    const previousOffline = this._offline;
     store.dispatch(updateOffline(offline));
     // Don't show the snackbar on the first load of the page.
     if (previousOffline === undefined) {
@@ -308,7 +321,7 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   _drawerOpenedChanged(opened) {
-    if (opened !== this.drawerOpened) {
+    if (opened !== this._drawerOpened) {
       store.dispatch(opened ? openDrawer() : closeDrawer());
     }
   }

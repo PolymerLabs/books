@@ -36,13 +36,13 @@ import './book-item.js';
 import './book-offline.js';
 
 class BookFavorites extends connect(store)(PageViewElement) {
-  render({items, authInitialized, user, showOffline}) {
+  render({ _items, _authInitialized, _user, _showOffline }) {
     updateMetadata({
       title: 'My Favorites - Books',
       description: 'My Favorites'
     });
 
-    const itemList = items ? Object.values(items) : [];
+    const itemList = _items ? Object.values(_items) : [];
     itemList.sort((a, b) => {
       return a.userInfo && b.userInfo && (a.userInfo.updated > b.userInfo.updated);
     });
@@ -138,9 +138,9 @@ class BookFavorites extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden="${showOffline}">
-        <div class="favorites-section" hidden="${!authInitialized || !user}">
-          <div class="favorites-empty" hidden="${!authInitialized || (!items || itemList.length)}">
+      <section hidden="${_showOffline}">
+        <div class="favorites-section" hidden="${!_authInitialized || !_user}">
+          <div class="favorites-empty" hidden="${!_authInitialized || !_items || itemList.length}">
             <h3>Your favorites are empty</h3>
             <p>Go <a href="/explore">find some books</a> and add to your favorites</p>
           </div>
@@ -155,29 +155,29 @@ class BookFavorites extends connect(store)(PageViewElement) {
           </ul>
         </div>
 
-        <div class="signin-section" hidden="${!authInitialized || user}">
+        <div class="signin-section" hidden="${!_authInitialized || _user}">
           <p>Please sign in to see the favorites.</p>
           <button class="book-button" on-click="${() => store.dispatch(signIn())}">Sign in</button>
         </div>
       </section>
 
-      <book-offline hidden="${!showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 
   static get properties() { return {
-    items: Array,
-    authInitialized: Boolean,
-    user: Object,
-    showOffline: Boolean
+    _items: Array,
+    _authInitialized: Boolean,
+    _user: Object,
+    _showOffline: Boolean
   }}
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this.items = state.favorites && state.favorites.items;
-    this.authInitialized = state.auth.initialized;
-    this.user = state.auth.user;
-    this.showOffline = state.app.offline && state.favorites.failure;
+    this._items = state.favorites && state.favorites.items;
+    this._authInitialized = state.auth.initialized;
+    this._user = state.auth.user;
+    this._showOffline = state.app.offline && state.favorites.failure;
   }
 
   _removeFavorite(e, item) {

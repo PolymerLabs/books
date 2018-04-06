@@ -11,7 +11,7 @@
 import { LitElement, html } from '@polymer/lit-element';
 
 class BookImage extends LitElement {
-  render({alt, placeholder, src, _loaded}) {
+  render({ alt, placeholder, src, _loaded }) {
     return html`
       <style>
         :host {

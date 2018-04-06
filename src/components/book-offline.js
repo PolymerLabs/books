@@ -13,7 +13,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { BookButtonStyle } from './shared-styles.js';
 
 class BookOffline extends LitElement {
-  render({offline}) {
+  render() {
     return html`
       ${BookButtonStyle}
       <style>
