@@ -32,11 +32,10 @@ $ npm i
 $ polymer serve # or similar that serve index.html for all routes
 ```
 
-### Enable OAuth for list/add/remove favorites on the authenticated user's bookshelf
-- Enable Books API and create OAuth client ID   
-https://developers.google.com/identity/protocols/OAuth2UserAgent
+#### Enable OAuth for list/add/remove favorites on the authenticated user's bookshelf
+- Enable Books API and create OAuth client ID  
+https://developers.google.com/identity/protocols/OAuth2UserAgent#prerequisites
 - Set the OAuth client ID in the application [here](https://github.com/PolymerLabs/books/blob/master/src/actions/auth.js#L24)
-
 
 ## Build and deploy
 ```bash
