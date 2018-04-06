@@ -4,6 +4,8 @@
 
 Books is a simple Google Books PWA. It uses [Google Books API](https://developers.google.com/books/docs/v1/reference/volumes/list) to search for books and [Embedded Viewer API](https://developers.google.com/books/docs/viewer/reference) to display book content.
 
+It also uses OAuth 2.0 authorization to retrieve a listing of the Favorites on the authenticated user's bookshelf. And also add to or remove from the Favorites on the authenticated user's bookshelf.
+
 The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
 
 ![books screenshot](https://user-images.githubusercontent.com/116360/37804470-9fe1d1bc-2df1-11e8-9751-c073da685b40.jpg)
@@ -12,6 +14,7 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 
 - Show a basic search-list-detail flow.
 - Use `fetch` to send request to Google Books API.
+- OAuth 2.0 authorization to access Google APIs.
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
 - Shimmer placeholder while content is loading.  
@@ -27,6 +30,12 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 $ npm i
 $ polymer serve # or similar that serve index.html for all routes
 ```
+
+### Enable OAuth for list/add/remove favorites on the authenticated user's bookshelf
+- Enable Books API and create OAuth client ID   
+https://developers.google.com/identity/protocols/OAuth2UserAgent
+- Set the OAuth client [here](https://github.com/PolymerLabs/books/blob/master/src/actions/auth.js#L24)
+
 
 ## Build and deploy
 ```bash
