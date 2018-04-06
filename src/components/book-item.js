@@ -8,15 +8,14 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { unsafeHTML } from '../../node_modules/lit-html/lib/unsafe-html.js';
+import { LitElement, html } from '@polymer/lit-element';
+import { unsafeHTML } from 'lit-html/lib/unsafe-html.js';
 
-import { responsiveWidth } from './shared-styles.js';
 import './book-image.js';
 import './book-rating.js';
 
 class BookItem extends LitElement {
-  render({item}) {
+  render({ item }) {
     const info = item && item.volumeInfo;
     const id = item ? item.id : '';
     const title = info ? info.title : '';
@@ -86,15 +85,20 @@ class BookItem extends LitElement {
           display: flex;
           flex-direction: column;
           flex: 1;
-          margin: 8px 8px 8px 16px;
+          padding: 8px 8px 8px 16px;
           font-size: 14px;
           font-weight: 300;
           overflow: hidden;
         }
 
+        .title-container {
+          display: flex;
+        }
+
         .title {
           position: relative;
-          margin: 0;
+          flex: 1;
+          margin: 0 6px 0 0;
           box-sizing: border-box;
           font-size: 18px;
           font-weight: 500;
@@ -164,13 +168,13 @@ class BookItem extends LitElement {
         }
 
         /* Wide layout */
-        @media (min-width: ${responsiveWidth}) {
+        @media (min-width: 648px) {
           .info {
             flex-direction: row;
           }
 
           .info-section {
-            margin: 16px;
+            padding: 16px;
           }
 
           .desc {
@@ -216,7 +220,9 @@ class BookItem extends LitElement {
         <div class="info">
           <book-image src="${thumbnail}"></book-image>
           <div class="info-section">
-            <h2 class="title">${title}</h2>
+            <div class="title-container">
+              <h2 class="title">${title}</h2><slot></slot>
+            </div>
             <div class="author info-item" hidden="${!author}">${author} - ${date}</div>
             <div class="info-item" hidden="${!info}">
               <book-rating rating="${rating}"></book-rating>

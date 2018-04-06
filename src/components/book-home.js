@@ -8,14 +8,12 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-
-import { responsiveWidth } from './shared-styles.js';
+import { LitElement, html } from '@polymer/lit-element';
 
 import './book-image.js';
 
 class BookHome extends LitElement {
-  render(props) {
+  render() {
     return html`
       <style>
         :host {
@@ -34,7 +32,7 @@ class BookHome extends LitElement {
         }
 
         /* Wide Layout */
-        @media (min-width: ${responsiveWidth}) {
+        @media (min-width: 648px) {
           .books-desc {
             padding: 96px 16px 0;
           }

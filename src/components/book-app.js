@@ -8,35 +8,51 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { connect } from '../../node_modules/pwa-helpers/connect-mixin.js';
-import { installRouter } from '../../node_modules/pwa-helpers/router.js';
-import { installOfflineWatcher } from '../../node_modules/pwa-helpers/network.js';
-import { installMediaQueryWatcher } from '../../node_modules/pwa-helpers/media-query.js';
+import { LitElement, html } from '@polymer/lit-element';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+import { installRouter } from 'pwa-helpers/router.js';
+import { installOfflineWatcher } from 'pwa-helpers/network.js';
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 
-import '../../node_modules/@polymer/app-layout/app-drawer/app-drawer.js';
-import '../../node_modules/@polymer/app-layout/app-header/app-header.js';
-import '../../node_modules/@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
-import '../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { setPassiveTouchGestures } from '../../node_modules/@polymer/polymer/lib/utils/settings.js';
-import { menuIcon, backIcon } from './book-icons.js';
-import { responsiveWidth } from './shared-styles.js';
+import '@polymer/app-layout/app-drawer/app-drawer.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+import { menuIcon, backIcon, accountIcon } from './book-icons.js';
 import './snack-bar.js'
 import './book-input-decorator.js';
 
 import { store } from '../store.js';
 import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, closeDrawer } from '../actions/app.js';
+import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  render({page, appTitle, drawerOpened, snackbarOpened, offline, wideLayout, query, bookId}) {
+  render({
+    appTitle,
+    _page,
+    _subTitle,
+    _lastVisitedListPage,
+    _offline,
+    _wideLayout,
+    _drawerOpened,
+    _snackbarOpened,
+    _authInitialized,
+    _user,
+    _query,
+    _bookId }) {
+
     // Anything that's related to rendering should be done in here.
 
     // True to hide the menu button and show the back button.
-    const hideMenuBtn = page === 'detail' || page === 'viewer';
+    const hideMenuBtn = _page === 'detail' || _page === 'viewer';
     // True to hide the input.
-    const hideInput = !page || page === 'about' || page === '404';
+    const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
     // True to make the search input aligns at the top inside the header instead of inside the main content.
-    const inputAtTop = !wideLayout || (page === 'explore' && query) || page === 'detail' || page === 'viewer';
+    const inputAtTop = !_wideLayout || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
+    // back button href
+    const backHref = _page === 'detail' ?
+        (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
 
     return html`
     <style>
@@ -73,7 +89,7 @@ class BookApp extends connect(store)(LitElement) {
       }
 
       .toolbar-top {
-        padding: 0 52px 0 8px;
+        padding: 0 8px 0 8px;
       }
 
       .toolbar-bottom {
@@ -91,6 +107,11 @@ class BookApp extends connect(store)(LitElement) {
         pointer-events: auto;
       }
 
+      .subtitle {
+        font-size: 18px;
+        font-weight: normal;
+      }
+
       book-input-decorator {
         max-width: 400px;
         transform: translate3d(0, 374px, 0);
@@ -102,7 +123,8 @@ class BookApp extends connect(store)(LitElement) {
       }
 
       .menu-btn,
-      .back-btn {
+      .back-btn,
+      .signin-btn {
         display: inline-block;
         width: 40px;
         height: 40px;
@@ -113,6 +135,21 @@ class BookApp extends connect(store)(LitElement) {
         fill: var(--app-header-text-color);
         cursor: pointer;
         text-decoration: none;
+      }
+
+      .signin-btn {
+        padding: 2px;
+        visibility: hidden;
+      }
+
+      .signin-btn[visible] {
+        visibility: visible;
+      }
+
+      .signin-btn > img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
       }
 
       app-drawer {
@@ -128,7 +165,7 @@ class BookApp extends connect(store)(LitElement) {
         position: relative;
       }
 
-      .drawer-list a {
+      .drawer-list > a {
         display: block;
         text-decoration: none;
         color: var(--app-drawer-text-color);
@@ -136,7 +173,7 @@ class BookApp extends connect(store)(LitElement) {
         padding: 0 24px;
       }
 
-      .drawer-list a[selected] {
+      .drawer-list > a[selected] {
         color: var(--app-drawer-selected-color);
         font-weight: bold;
       }
@@ -146,11 +183,11 @@ class BookApp extends connect(store)(LitElement) {
         min-height: var(--app-main-content-min-height);
       }
 
-      .main-content .page {
+      ._page {
         display: none;
       }
 
-      .main-content .page[active] {
+      ._page[active] {
         display: block;
       }
 
@@ -168,67 +205,72 @@ class BookApp extends connect(store)(LitElement) {
       [hidden] {
         display: none !important;
       }
-
-      /* Wide layout */
-      @media (min-width: ${responsiveWidth}) {
-        .toolbar-top {
-          padding: 0 60px 0 16px;
-        }
-      }
     </style>
 
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}" on-click="${_ => this._drawerOpenedChanged(true)}">${menuIcon}</button>
-        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}"
-            href="${page === 'detail' ? `/explore?q=${query}` : `/detail/${bookId}`}">${backIcon}</a>
+        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}"
+            on-click="${() => this._drawerOpenedChanged(true)}">${menuIcon}</button>
+        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/explore">${appTitle}</a></div>
+        <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
+            on-click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
+          ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
+        </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" aria-label="Search Books" autofocus type="search" value="${query}" on-change="${(e) => this._search(e)}">
+          <input slot="input" aria-label="Search Books" autofocus type="search" value="${_query}"
+              on-change="${(e) => this._search(e)}">
         </book-input-decorator>
+        <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
+    <app-drawer opened="${_drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
       <nav class="drawer-list" on-click="${e => this._drawerOpenedChanged(false)}">
-        <a selected?="${page === 'explore'}" href="/explore?q=${query}">Home</a>
-        <a selected?="${page === 'about'}" href="/about">About</a>
+        <a selected?="${_page === 'explore'}" href="/explore?q=${_query}">Home</a>
+        <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
+        <a selected?="${_page === 'about'}" href="/about">About</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main class="main-content">
-      <book-home class="page" active?="${page === 'home'}"></book-home>
-      <book-explore class="page" active?="${page === 'explore'}"></book-explore>
-      <book-detail class="page" active?="${page === 'detail'}"></book-detail>
-      <book-viewer class="page" active?="${page === 'viewer'}"></book-viewer>
-      <book-about class="page" active?="${page === 'about'}"></book-about>
-      <book-404 class="page" active?="${page === '404'}"></book-404>
+      <book-home class="_page" active?="${_page === 'home'}"></book-home>
+      <book-explore class="_page" active?="${_page === 'explore'}"></book-explore>
+      <book-detail class="_page" active?="${_page === 'detail'}"></book-detail>
+      <book-viewer class="_page" active?="${_page === 'viewer'}"></book-viewer>
+      <book-favorites class="_page" active?="${_page === 'favorites'}"></book-favorites>
+      <book-about class="_page" active?="${_page === 'about'}"></book-about>
+      <book-404 class="_page" active?="${_page === '404'}"></book-404>
     </main>
 
     <footer>
       <p>Made with &lt;3 by the Polymer team.</p>
     </footer>
 
-    <snack-bar active?="${snackbarOpened}">
-        You are now ${offline ? 'offline' : 'online'}.</snack-bar>
+    <snack-bar active?="${_snackbarOpened}">
+        You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 
   static get properties() {
     return {
-      page: String,
       appTitle: String,
-      drawerOpened: Boolean,
-      snackbarOpened: Boolean,
-      offline: Boolean,
-      wideLayout: Boolean,
-      query: String,
-      bookId: String
+      _page: String,
+      _subTitle: String,
+      _lastVisitedListPage: Boolean,
+      _offline: Boolean,
+      _wideLayout: Boolean,
+      _drawerOpened: Boolean,
+      _snackbarOpened: Boolean,
+      _authInitialized: Boolean,
+      _user: Object,
+      _query: String,
+      _bookId: String
     }
   }
 
@@ -240,7 +282,7 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   didRender(props, changed) {
-    if ('page' in changed) {
+    if ('_page' in changed) {
       window.scrollTo(0, 0);
     }
   }
@@ -249,31 +291,37 @@ class BookApp extends connect(store)(LitElement) {
     super.ready();
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
-    installMediaQueryWatcher(`(min-width: ${responsiveWidth}) and (min-height: ${responsiveWidth})`,
+    installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateWideLayout(matches)));
-    this._readied = true;
+    store.dispatch(fetchUser());
   }
 
   stateChanged(state) {
-    this.page = state.app.page;
-    this.offline = state.app.offline;
-    this.wideLayout = state.app.wideLayout;
-    this.snackbarOpened = state.app.snackbarOpened;
-    this.drawerOpened = state.app.drawerOpened;
-    this.query = state.books && state.books.query || '';
-    this.bookId = state.book && state.book.id;
+    this._page = state.app.page;
+    this._subTitle = state.app.subTitle;
+    this._lastVisitedListPage = state.app.lastVisitedListPage;
+    this._offline = state.app.offline;
+    this._wideLayout = state.app.wideLayout;
+    this._drawerOpened = state.app.drawerOpened;
+    this._snackbarOpened = state.app.snackbarOpened;
+    this._authInitialized = state.auth.initialized;
+    this._user = state.auth.user;
+    this._query = state.books && state.books.query || '';
+    this._bookId = state.book && state.book.id;
   }
 
   _offlineChanged(offline) {
+    const previousOffline = this._offline;
     store.dispatch(updateOffline(offline));
     // Don't show the snackbar on the first load of the page.
-    if (this._readied) {
-      store.dispatch(showSnackbar());
+    if (previousOffline === undefined) {
+      return;
     }
+    store.dispatch(showSnackbar());
   }
 
   _drawerOpenedChanged(opened) {
-    if (opened !== this.drawerOpened) {
+    if (opened !== this._drawerOpened) {
       store.dispatch(opened ? openDrawer() : closeDrawer());
     }
   }

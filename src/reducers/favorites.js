@@ -8,22 +8,20 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-import { createSelector } from 'reselect';
 import {
-  REQUEST_BOOKS, RECEIVE_BOOKS, FAIL_BOOKS,
-} from '../actions/books.js';
+  REQUEST_FAVORITES, RECEIVE_FAVORITES, FAIL_FAVORITES,
+  ADD_FAVORITE, REMOVE_FAVORITE
+} from '../actions/favorites.js';
 
-export const books = (state = {query: null}, action) => {
+export const favorites = (state = {}, action) => {
   switch (action.type) {
-    case REQUEST_BOOKS:
+    case REQUEST_FAVORITES:
       return {
         ...state,
-        query: action.query,
-        items: null, // reset items
         failure: false,
         isFetching: true
       };
-    case RECEIVE_BOOKS:
+    case RECEIVE_FAVORITES:
       return {
         ...state,
         items: action.items.reduce((obj, item) => {
@@ -33,16 +31,34 @@ export const books = (state = {query: null}, action) => {
         failure: false,
         isFetching: false
       };
-    case FAIL_BOOKS:
+    case FAIL_FAVORITES:
       return {
         ...state,
         items: null,
         failure: true,
         isFetching: false
       };
+    case ADD_FAVORITE:
+      return {
+        ...state,
+        items: {
+          ...state.items,
+          [action.item.id]: action.item
+        }
+      }
+    case REMOVE_FAVORITE:
+      return {
+        ...state,
+        items: Object.keys(state.items).reduce((obj, key) => {
+          if (key !== action.item.id) {
+            obj[key] = state.items[key];
+          }
+          return obj;
+        }, {}),
+      }
     default:
       return state;
   }
 }
 
-export const itemsSelector = state => state.books && state.books.items;
+export const favoritesSelector = state => state.favorites && state.favorites.items;

@@ -8,41 +8,46 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '../../node_modules/@polymer/lit-element/lit-element.js';
-import { repeat } from '../../node_modules/lit-html/lib/repeat.js';
-import { unsafeHTML } from '../../node_modules/lit-html/lib/unsafe-html.js';
-import { connect } from '../../node_modules/pwa-helpers/connect-mixin.js';
-import { updateMetadata } from '../../node_modules/pwa-helpers/metadata.js';
+import { html } from '@polymer/lit-element';
+import { repeat } from 'lit-html/lib/repeat.js';
+import { unsafeHTML } from 'lit-html/lib/unsafe-html.js';
+import { connect } from 'pwa-helpers/connect-mixin.js';
+import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // This element is connected to the redux store.
 import { store } from '../store.js';
 
 // We are lazy loading its reducer.
 import { book, bookSelector } from '../reducers/book.js';
+import { favorites } from '../reducers/favorites.js';
 store.addReducers({
-  book
+  book,
+  favorites
 });
 
 // We want to export this action so it can be called after import() returns the module
 export { fetchBook } from '../actions/book.js';
+export { fetchFavorites } from '../actions/favorites.js';
 
 import { refreshPage } from '../actions/app.js';
+import { saveFavorite } from '../actions/favorites.js';
 
 import { PageViewElement } from './page-view-element.js';
-import { responsiveWidth, BookButtonStyle } from './shared-styles.js';
+import { BookButtonStyle } from './shared-styles.js';
+import { favoriteIcon, favoriteBorderIcon } from './book-icons.js';
 import './book-rating.js';
 import './book-offline.js';
 import './book-image.js';
 
 class BookDetail extends connect(store)(PageViewElement) {
-  render({item, showOffline}) {
+  render({_item, _favorites, _lastVisitedListPage, _showOffline, _isSignedIn}) {
     // Don't render if there is no item.
-    if (!item) {
+    if (!_item) {
       return;
     }
 
-    const info = item.volumeInfo;
-    const accessInfo = item.accessInfo;
+    const info = _item.volumeInfo;
+    const accessInfo = _item.accessInfo;
     const title = info.title;
     const author = info.authors && info.authors.join(', ');
     const date = (new Date(info.publishedDate)).getFullYear();
@@ -54,6 +59,7 @@ class BookDetail extends connect(store)(PageViewElement) {
     const poster = thumbnail.replace('&zoom=1', '');
     const categories = info.categories || [];
     const identifiers = info.industryIdentifiers || [];
+    const isFavorite = _favorites && !!_favorites[_item.id];
 
     updateMetadata({
       title: `${title} - Books`,
@@ -62,7 +68,7 @@ class BookDetail extends connect(store)(PageViewElement) {
     });
 
     return html`
-      <style>${BookButtonStyle}</style>
+      ${BookButtonStyle}
       <style>
         :host {
           display: block;
@@ -132,12 +138,12 @@ class BookDetail extends connect(store)(PageViewElement) {
           line-height: 1.8;
         }
 
-        .desc h3 {
+        .desc > h3 {
           font-size: 15px;
           font-weight: 500;
         }
 
-        .desc ul {
+        .desc > ul {
           margin-bottom: 0;
         }
 
@@ -153,8 +159,32 @@ class BookDetail extends connect(store)(PageViewElement) {
           font-size: 14px;
         }
 
-        .btn-container {
+        .fav-btn-container,
+        .preview-btn-container {
           padding-top: 16px;
+        }
+
+        .fav-btn-container {
+          height: 32px;
+        }
+
+        .fav-button {
+          display: flex;
+          align-items: center;
+          width: 156px;
+          margin: 0 8px 0 0;
+          padding: 0;
+          background: transparent;
+          border: 0;
+          -webkit-appearance: none;
+          font-size: 12px;
+          cursor: pointer;
+        }
+
+        .fav-button > svg {
+          width: 32px;
+          height: 32px;
+          margin-right: 8px;
         }
 
         [hidden] {
@@ -162,7 +192,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         }
 
         /* desktop screen */
-        @media (min-width: ${responsiveWidth}) {
+        @media (min-width: 648px) {
           :host {
             padding: 48px 24px 24px;
           }
@@ -189,9 +219,13 @@ class BookDetail extends connect(store)(PageViewElement) {
             line-height: 1.3;
           }
 
-          .btn-container {
+          .fav-btn-container,
+          .preview-btn-container {
             display: flex;
             justify-content: flex-end;
+          }
+
+          .preview-btn-container {
             padding-bottom: 24px;
           }
 
@@ -205,7 +239,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden="${showOffline}">
+      <section hidden="${_showOffline}">
         <div class="info">
           <div class="cover" hero>
             <book-image blur-up src="${poster}" placeholder="${thumbnail}"></book-image>
@@ -216,8 +250,13 @@ class BookDetail extends connect(store)(PageViewElement) {
             <div class="info-item" hidden="${!pageCount}" desktop>${pageCount} pages</div>
             <div class="info-item" hidden="${!publisher}" desktop>${publisher} - publisher</div>
             <div class="flex"></div>
-            <div class="btn-container">
-              <a href="/viewer/${item.id}" class="book-button" hidden="${!accessInfo.embeddable}">PREVIEW</a>
+            <div class="fav-btn-container" hidden="${_lastVisitedListPage === 'favorites'}">
+              <button class="fav-button" on-click="${() => store.dispatch(saveFavorite(_item, isFavorite))}" hidden="${!_isSignedIn}">
+                ${isFavorite ? favoriteIcon : favoriteBorderIcon} ${isFavorite ? 'Added to Favorites' : 'Add to Favorites'}
+              </button>
+            </div>
+            <div class="preview-btn-container">
+              <a href="/viewer/${_item.id}" class="book-button" hidden="${!accessInfo.embeddable}">PREVIEW</a>
             </div>
           </div>
         </div>
@@ -254,19 +293,25 @@ class BookDetail extends connect(store)(PageViewElement) {
         </div>
       </section>
 
-      <book-offline hidden="${!showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 
   static get properties() { return {
-    item: Object,
-    showOffline: Boolean
+    _item: Object,
+    _favorites: Object,
+    _lastVisitedListPage: Boolean,
+    _showOffline: Boolean,
+    _isSignedIn: Boolean
   }}
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this.item = bookSelector(state);
-    this.showOffline = state.app.offline && state.book.failure;
+    this._item = bookSelector(state);
+    this._favorites = state.favorites && state.favorites.items;
+    this._lastVisitedListPage = state.app.lastVisitedListPage;
+    this._showOffline = state.app.offline && state.book.failure;
+    this._isSignedIn = !!state.auth.user;
   }
 }
 

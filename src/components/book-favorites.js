@@ -17,32 +17,38 @@ import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { store } from '../store.js';
 
 // We are lazy loading its reducer.
-import { books } from '../reducers/books.js';
+import { favorites } from '../reducers/favorites.js';
 store.addReducers({
-  books
+  favorites
 });
 
 // We want to export this action so it can be called after import() returns the module
-export { searchBooks } from '../actions/books.js';
+export { fetchFavorites } from '../actions/favorites.js';
+import { saveFavorite } from '../actions/favorites.js';
+import { signIn } from '../actions/auth.js';
 
 import { refreshPage } from '../actions/app.js';
 
 import { PageViewElement } from './page-view-element.js';
-import './book-image.js';
+import { BookButtonStyle } from './shared-styles.js';
+import { closeIcon } from './book-icons.js';
 import './book-item.js';
 import './book-offline.js';
 
-class BookExplore extends connect(store)(PageViewElement) {
-  render({ _query, _items, _showOffline }) {
+class BookFavorites extends connect(store)(PageViewElement) {
+  render({ _items, _authInitialized, _user, _showOffline }) {
     updateMetadata({
-      title: `${_query ? `${_query} - ` : ''}Books`,
-      description: 'Search for books'
+      title: 'My Favorites - Books',
+      description: 'My Favorites'
     });
 
-    // actual items or placeholder items if the items haven't loaded yet.
-    const itemList = _items ? Object.values(_items) : [{},{},{},{},{}];
+    const itemList = _items ? Object.values(_items) : [];
+    itemList.sort((a, b) => {
+      return a.userInfo && b.userInfo && (a.userInfo.updated > b.userInfo.updated);
+    });
 
     return html`
+      ${BookButtonStyle}
       <style>
         :host {
           display: block;
@@ -80,14 +86,34 @@ class BookExplore extends connect(store)(PageViewElement) {
           padding-top: 65%;
         }
 
-        .books-bg {
-          height: 300px;
-          max-width: 570px;
-          margin: 0 auto;
+        h3 {
+          text-align: center;
+          font-size: 24px;
+          font-weight: 400;
+          margin-bottom: 0;
         }
 
-        .books-desc {
-          padding: 24px 16px 0;
+        .signin-section {
+          text-align: center;
+        }
+
+        .fav-button {
+          width: 32px;
+          height: 32px;
+          padding: 2px;
+          margin: 0;
+          border: 2px solid;
+          background: transparent;
+          -webkit-appearance: none;
+          cursor: pointer;
+        }
+
+        .fav-button > svg {
+          width: 24px;
+          height: 24px;
+        }
+
+        .favorites-empty {
           text-align: center;
         }
 
@@ -99,10 +125,6 @@ class BookExplore extends connect(store)(PageViewElement) {
         @media (min-width: 648px) {
           li {
             height: 364px;
-          }
-
-          .books-desc {
-            padding: 96px 16px 0;
           }
         }
 
@@ -117,17 +139,26 @@ class BookExplore extends connect(store)(PageViewElement) {
       </style>
 
       <section hidden="${_showOffline}">
-        <ul class="books" hidden="${!_query}">
-          ${repeat(itemList, (item) => html`
-            <li>
-              <book-item item="${item}"></book-item>
-            </li>
-          `)}
-        </ul>
+        <div class="favorites-section" hidden="${!_authInitialized || !_user}">
+          <div class="favorites-empty" hidden="${!_authInitialized || !_items || itemList.length}">
+            <h3>Your favorites are empty</h3>
+            <p>Go <a href="/explore">find some books</a> and add to your favorites</p>
+          </div>
+          <ul class="books">
+            ${repeat(itemList, (item) => html`
+              <li>
+                <book-item item="${item}">
+                  <button class="fav-button" on-click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
+                </book-item>
+              </li>
+            `)}
+          </ul>
+        </div>
 
-        <book-image class="books-bg" alt="Books Home" center src="images/books-bg.jpg" hidden="${_query}" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAIAAADwyuo0AAAAI0lEQVR4AWPw2v7Wfe1Dj7X3/Pd8YPDf+Uqva79x38GQvW8Bu0sOexptskUAAAAASUVORK5CYII="></book-image>
-
-        <div class="books-desc" hidden="${_query}">Search the world's most comprehensive index of full-text books.</div>
+        <div class="signin-section" hidden="${!_authInitialized || _user}">
+          <p>Please sign in to see the favorites.</p>
+          <button class="book-button" on-click="${() => store.dispatch(signIn())}">Sign in</button>
+        </div>
       </section>
 
       <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
@@ -135,17 +166,24 @@ class BookExplore extends connect(store)(PageViewElement) {
   }
 
   static get properties() { return {
-    _query: String,
     _items: Array,
+    _authInitialized: Boolean,
+    _user: Object,
     _showOffline: Boolean
   }}
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    this._query = state.books.query;
-    this._items = state.books && state.books.items;
-    this._showOffline = state.app.offline && state.books.failure;
+    this._items = state.favorites && state.favorites.items;
+    this._authInitialized = state.auth.initialized;
+    this._user = state.auth.user;
+    this._showOffline = state.app.offline && state.favorites.failure;
+  }
+
+  _removeFavorite(e, item) {
+    e.preventDefault();
+    store.dispatch(saveFavorite(item, true));
   }
 }
 
-window.customElements.define('book-explore', BookExplore);
+window.customElements.define('book-favorites', BookFavorites);
