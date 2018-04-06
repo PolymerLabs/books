@@ -8,7 +8,7 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-import { LitElement, html } from '@polymer/lit-element/lit-element.js';
+import { LitElement, html } from '@polymer/lit-element';
 
 class BookImage extends LitElement {
   render({alt, placeholder, src, _loaded}) {
@@ -32,9 +32,9 @@ class BookImage extends LitElement {
 
         :host([blur-up]) #placeholder {
           background-position: center 10%;
-          background-size: 70%;
+          background-size: 80%;
           background-repeat: no-repeat;
-          filter: blur(5px);
+          filter: blur(3px);
           will-change: filter;
         }
 

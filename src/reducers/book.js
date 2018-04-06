@@ -10,6 +10,7 @@
 
 import { createSelector } from 'reselect';
 import { itemsSelector } from './books.js';
+import { favoritesSelector } from './favorites.js';
 import {
   REQUEST_BOOK, RECEIVE_BOOK, FAIL_BOOK
 } from '../actions/book.js';
@@ -47,8 +48,9 @@ const itemSelector = state => state.book.item;
 export const bookSelector = createSelector(
   idSelector,
   itemsSelector,
+  favoritesSelector,
   itemSelector,
-  (id, items, item) => {
-    return items && items[id] || item;
+  (id, items, favorites, item) => {
+    return items && items[id] || favorites && favorites[id] || item;
   }
 );

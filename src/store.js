@@ -13,6 +13,7 @@ import thunk from 'redux-thunk';
 import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer.js';
 
 import app from './reducers/app.js';
+import auth from './reducers/auth.js';
 
 const compose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || origCompose;
 
@@ -23,5 +24,5 @@ export const store = createStore(
 
 // Initially loaded reducers.
 store.addReducers({
-  app
+  app, auth
 });

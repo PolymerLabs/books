@@ -26,7 +26,7 @@ export const searchBooks = (query) => (dispatch, getState) => {
         .catch(() => dispatch(failBooks(query)));
     } else {
       // query is empty, clear the results
-      return dispatch(receiveBooks(query, []));
+      dispatch(receiveBooks(query, []));
     }
   }
 };

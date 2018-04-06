@@ -15,6 +15,7 @@ export const OPEN_DRAWER = 'OPEN_DRAWER';
 export const CLOSE_DRAWER = 'CLOSE_DRAWER';
 export const OPEN_SNACKBAR = 'OPEN_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
+export const UPDATE_SUBTITLE = 'UPDATE_SUBTITLE';
 
 export const navigate = (location) => (dispatch) => {
   // Extract the page name from path.
@@ -52,18 +53,27 @@ const loadPage = (page, query, bookId) => async (dispatch, getState) => {
       // Fetch the book info for the given book id.
       await dispatch(module.fetchBook(bookId));
       // Wait for to check if the book id is valid.
-      if (fetchBookFailed(getState().book)) {
+      if (isFetchBookFailed(getState().book)) {
         page = '404';
       }
+      // Fetch favorites
+      dispatch(module.fetchFavorites());
       break;
     case 'viewer':
       module = await import('../components/book-viewer.js');
       // Fetch the book info for the given book id.
       await dispatch(module.fetchBook(bookId));
       // Wait for to check if book id is valid.
-      if (fetchBookFailed(getState().book)) {
+      if (isFetchBookFailed(getState().book)) {
         page = '404';
       }
+      break;
+    case 'favorites':
+      module = await import('../components/book-favorites.js');
+      // Fetch favorites
+      dispatch(module.fetchFavorites());
+      // Update subtitle
+      dispatch(updateSubTitle('Favorites'));
       break;
     case 'about':
       await import('../components/book-about.js');
@@ -93,7 +103,7 @@ const updatePage = (page) => {
   };
 }
 
-const fetchBookFailed = (book) => {
+const isFetchBookFailed = (book) => {
   return !book.isFetching && book.failure;
 }
 
@@ -138,3 +148,10 @@ export const updateWideLayout = (wideLayout) => {
     wideLayout
   };
 };
+
+export const updateSubTitle = (subTitle) => {
+  return {
+    type: UPDATE_SUBTITLE,
+    subTitle
+  }
+}

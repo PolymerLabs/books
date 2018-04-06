@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element/lit-element.js';
+import { LitElement, html } from '@polymer/lit-element';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
@@ -19,24 +19,27 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-import { menuIcon, backIcon } from './book-icons.js';
-import { responsiveWidth } from './shared-styles.js';
+import { menuIcon, backIcon, accountIcon } from './book-icons.js';
 import './snack-bar.js'
 import './book-input-decorator.js';
 
 import { store } from '../store.js';
 import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, closeDrawer } from '../actions/app.js';
+import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  render({page, appTitle, drawerOpened, snackbarOpened, offline, wideLayout, query, bookId}) {
+  render({page, appTitle, subTitle, drawerOpened, snackbarOpened, lastVisitedListPage, offline, wideLayout, query, bookId, authInitialized, user}) {
     // Anything that's related to rendering should be done in here.
 
     // True to hide the menu button and show the back button.
     const hideMenuBtn = page === 'detail' || page === 'viewer';
     // True to hide the input.
-    const hideInput = !page || page === 'about' || page === '404';
+    const hideInput = !page || page === 'favorites' || page === 'about' || page === '404';
     // True to make the search input aligns at the top inside the header instead of inside the main content.
     const inputAtTop = !wideLayout || (page === 'explore' && query) || page === 'detail' || page === 'viewer';
+    // back button href
+    const backHref = page === 'detail' ?
+        (lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${query}`) : `/detail/${bookId}`;
 
     return html`
     <style>
@@ -73,7 +76,7 @@ class BookApp extends connect(store)(LitElement) {
       }
 
       .toolbar-top {
-        padding: 0 52px 0 8px;
+        padding: 0 8px 0 8px;
       }
 
       .toolbar-bottom {
@@ -91,6 +94,11 @@ class BookApp extends connect(store)(LitElement) {
         pointer-events: auto;
       }
 
+      .subtitle {
+        font-size: 18px;
+        font-weight: normal;
+      }
+
       book-input-decorator {
         max-width: 400px;
         transform: translate3d(0, 374px, 0);
@@ -102,7 +110,8 @@ class BookApp extends connect(store)(LitElement) {
       }
 
       .menu-btn,
-      .back-btn {
+      .back-btn,
+      .signin-btn {
         display: inline-block;
         width: 40px;
         height: 40px;
@@ -113,6 +122,21 @@ class BookApp extends connect(store)(LitElement) {
         fill: var(--app-header-text-color);
         cursor: pointer;
         text-decoration: none;
+      }
+
+      .signin-btn {
+        padding: 2px;
+        visibility: hidden;
+      }
+
+      .signin-btn[visible] {
+        visibility: visible;
+      }
+
+      .signin-btn > img {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
       }
 
       app-drawer {
@@ -128,7 +152,7 @@ class BookApp extends connect(store)(LitElement) {
         position: relative;
       }
 
-      .drawer-list a {
+      .drawer-list > a {
         display: block;
         text-decoration: none;
         color: var(--app-drawer-text-color);
@@ -136,7 +160,7 @@ class BookApp extends connect(store)(LitElement) {
         padding: 0 24px;
       }
 
-      .drawer-list a[selected] {
+      .drawer-list > a[selected] {
         color: var(--app-drawer-selected-color);
         font-weight: bold;
       }
@@ -146,11 +170,11 @@ class BookApp extends connect(store)(LitElement) {
         min-height: var(--app-main-content-min-height);
       }
 
-      .main-content .page {
+      .page {
         display: none;
       }
 
-      .main-content .page[active] {
+      .page[active] {
         display: block;
       }
 
@@ -168,27 +192,26 @@ class BookApp extends connect(store)(LitElement) {
       [hidden] {
         display: none !important;
       }
-
-      /* Wide layout */
-      @media (min-width: ${responsiveWidth}) {
-        .toolbar-top {
-          padding: 0 60px 0 16px;
-        }
-      }
     </style>
 
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}" on-click="${_ => this._drawerOpenedChanged(true)}">${menuIcon}</button>
-        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}"
-            href="${page === 'detail' ? `/explore?q=${query}` : `/detail/${bookId}`}">${backIcon}</a>
+        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}"
+            on-click="${() => this._drawerOpenedChanged(true)}">${menuIcon}</button>
+        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/explore">${appTitle}</a></div>
+        <button class="signin-btn" aria-label="Sign In" visible?="${authInitialized}"
+            on-click="${() =>  store.dispatch(user && user.imageUrl ? signOut() : signIn())}">
+          ${user && user.imageUrl ? html`<img src="${user.imageUrl}">` : accountIcon}
+        </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" aria-label="Search Books" autofocus type="search" value="${query}" on-change="${(e) => this._search(e)}">
+          <input slot="input" aria-label="Search Books" autofocus type="search" value="${query}"
+              on-change="${(e) => this._search(e)}">
         </book-input-decorator>
+        <h4 class="subtitle" hidden="${!hideInput}">${subTitle}</h4>
       </app-toolbar>
     </app-header>
 
@@ -196,6 +219,7 @@ class BookApp extends connect(store)(LitElement) {
     <app-drawer opened="${drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
       <nav class="drawer-list" on-click="${e => this._drawerOpenedChanged(false)}">
         <a selected?="${page === 'explore'}" href="/explore?q=${query}">Home</a>
+        <a selected?="${page === 'favorites'}" href="/favorites">Favorites</a>
         <a selected?="${page === 'about'}" href="/about">About</a>
       </nav>
     </app-drawer>
@@ -206,6 +230,7 @@ class BookApp extends connect(store)(LitElement) {
       <book-explore class="page" active?="${page === 'explore'}"></book-explore>
       <book-detail class="page" active?="${page === 'detail'}"></book-detail>
       <book-viewer class="page" active?="${page === 'viewer'}"></book-viewer>
+      <book-favorites class="page" active?="${page === 'favorites'}"></book-favorites>
       <book-about class="page" active?="${page === 'about'}"></book-about>
       <book-404 class="page" active?="${page === '404'}"></book-404>
     </main>
@@ -223,12 +248,16 @@ class BookApp extends connect(store)(LitElement) {
     return {
       page: String,
       appTitle: String,
+      subTitle: String,
       drawerOpened: Boolean,
       snackbarOpened: Boolean,
+      lastVisitedListPage: Boolean,
       offline: Boolean,
       wideLayout: Boolean,
       query: String,
-      bookId: String
+      bookId: String,
+      authInitialized: Boolean,
+      user: Object
     }
   }
 
@@ -249,27 +278,33 @@ class BookApp extends connect(store)(LitElement) {
     super.ready();
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
-    installMediaQueryWatcher(`(min-width: ${responsiveWidth}) and (min-height: ${responsiveWidth})`,
+    installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateWideLayout(matches)));
-    this._readied = true;
+    store.dispatch(fetchUser());
   }
 
   stateChanged(state) {
     this.page = state.app.page;
+    this.subTitle = state.app.subTitle;
     this.offline = state.app.offline;
     this.wideLayout = state.app.wideLayout;
-    this.snackbarOpened = state.app.snackbarOpened;
     this.drawerOpened = state.app.drawerOpened;
+    this.snackbarOpened = state.app.snackbarOpened;
+    this.lastVisitedListPage = state.app.lastVisitedListPage;
     this.query = state.books && state.books.query || '';
     this.bookId = state.book && state.book.id;
+    this.authInitialized = state.auth.initialized;
+    this.user = state.auth.user;
   }
 
   _offlineChanged(offline) {
+    const previousOffline = this.offline;
     store.dispatch(updateOffline(offline));
     // Don't show the snackbar on the first load of the page.
-    if (this._readied) {
-      store.dispatch(showSnackbar());
+    if (previousOffline === undefined) {
+      return;
     }
+    store.dispatch(showSnackbar());
   }
 
   _drawerOpenedChanged(opened) {

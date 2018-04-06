@@ -15,9 +15,10 @@ export const FAIL_BOOK = 'FAIL_BOOK';
 export const fetchBook = (id) => (dispatch, getState) => {
   dispatch(requestBook(id));
   const state = getState();
-  const book = state.books && state.books.items[id];
+  const book = state.books && state.books.items && state.books.items[id] ||
+      state.favorites && state.favorites.items && state.favorites.items[id];
   if (book) {
-    // book found in state.books.items
+    // book found in state.books.items or state.favorites.items
     dispatch(receiveBook(id));
     // let the calling code know there's nothing to wait for.
     return Promise.resolve();

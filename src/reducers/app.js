@@ -8,16 +8,23 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { UPDATE_PAGE, UPDATE_OFFLINE, UPDATE_WIDE_LAYOUT,
+import { UPDATE_PAGE, UPDATE_SUBTITLE, UPDATE_OFFLINE, UPDATE_WIDE_LAYOUT,
          OPEN_DRAWER, CLOSE_DRAWER,
          OPEN_SNACKBAR, CLOSE_SNACKBAR } from '../actions/app.js';
 
 const app = (state = {drawerOpened: false}, action) => {
   switch (action.type) {
     case UPDATE_PAGE:
+      const p = action.page;
       return {
         ...state,
-        page: action.page
+        page: p,
+        lastVisitedListPage: p === 'explore' || p === 'favorites' ? p : state.lastVisitedListPage
+      };
+    case UPDATE_SUBTITLE:
+      return {
+        ...state,
+        subTitle: action.subTitle
       };
     case UPDATE_OFFLINE:
       return {
