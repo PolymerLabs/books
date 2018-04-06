@@ -4,7 +4,7 @@
 
 Books is a simple Google Books PWA. It uses [Google Books API](https://developers.google.com/books/docs/v1/reference/volumes/list) to search for books and [Embedded Viewer API](https://developers.google.com/books/docs/viewer/reference) to display book content.
 
-It also uses OAuth 2.0 authorization to retrieve a listing of the Favorites on the authenticated user's bookshelf. And also add to or remove from the Favorites on the authenticated user's bookshelf.
+It also uses [OAuth 2.0](https://developers.google.com/identity/protocols/OAuth2UserAgent) authorization to retrieve a listing of the Favorites on the authenticated user's bookshelf. And add/remove favorite on the authenticated user's bookshelf.
 
 The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
 
@@ -14,7 +14,8 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 
 - Show a basic search-list-detail flow.
 - Use `fetch` to send request to Google Books API.
-- OAuth 2.0 authorization to access Google APIs.
+- Sign-in to Google account using [Google Sign-In Client API](https://developers.google.com/identity/sign-in/web/reference#googleauthsignin)
+- OAuth 2.0 authorization to access Google APIs using [Google API Client Library](https://developers.google.com/api-client-library/javascript/reference/referencedocs)
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
 - Shimmer placeholder while content is loading.  
@@ -34,7 +35,7 @@ $ polymer serve # or similar that serve index.html for all routes
 ### Enable OAuth for list/add/remove favorites on the authenticated user's bookshelf
 - Enable Books API and create OAuth client ID   
 https://developers.google.com/identity/protocols/OAuth2UserAgent
-- Set the OAuth client [here](https://github.com/PolymerLabs/books/blob/master/src/actions/auth.js#L24)
+- Set the OAuth client ID in the application [here](https://github.com/PolymerLabs/books/blob/master/src/actions/auth.js#L24)
 
 
 ## Build and deploy
