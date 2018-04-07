@@ -7,6 +7,7 @@
   ],
   "license": "https://polymer.github.io/LICENSE.txt",
   "scripts": {
+<<<<<<< HEAD
     "start": "polymer serve --entrypoint index.html",
     "test": "mocha test/ --timeout=10000",
     "regen-test-baseline": "mocha test/screenshots-baseline/regenerate.js --timeout=10000",
@@ -16,6 +17,10 @@
     "sw": "npx workbox generate:sw",
     "clean": "rm -rf bundled dist",
     "build": "npm run clean && npm run bundle && npm run minify && npm run copy && npm run sw"
+=======
+    "start": "polymer serve",
+    "build": "polymer build"
+>>>>>>> master
   },
   "dependencies": {
     "@polymer/app-layout": "^3.0.0-pre.12",

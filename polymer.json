@@ -1,31 +1,76 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/book-app.html",
-  "fragments": [
-    "src/book-home.html",
-    "src/book-explore.html",
-    "src/book-detail.html",
-    "src/book-viewer.html",
-    "src/book-about.html",
-    "src/book-404.html"
-  ],
+  "shell": "src/components/book-app.js",
   "sources": [
-    "src/**/*",
     "images/**/*"
   ],
   "extraDependencies": [
     "manifest.json",
-    "node_modules/@webcomponents/webcomponentsjs/*.js"
+    "node_modules/@webcomponents/webcomponentsjs/**"
   ],
   "builds": [
     {
-      "preset": "es5-bundled"
+      "name": "esm-bundled",
+      "basePath": true,
+      "browserCapabilities": [
+        "es2015",
+        "modules"
+      ],
+      "js": {
+        "minify": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": {
+        "inlineScripts": false
+      },
+      "addServiceWorker": true
     },
     {
-      "preset": "es6-bundled"
+      "name": "es6-bundled",
+      "basePath": true,
+      "browserCapabilities": [
+        "es2015"
+      ],
+      "js": {
+        "minify": true,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": {
+        "inlineScripts": false
+      },
+      "addServiceWorker": true
     },
     {
-      "preset": "es6-unbundled"
+      "name": "es5-bundled",
+      "basePath": true,
+      "js": {
+        "minify": true,
+        "compile": true,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": {
+        "inlineScripts": false
+      },
+      "addServiceWorker": true
     }
-  ]
+  ],
+  "moduleResolution": "node",
+  "npm": true
 }

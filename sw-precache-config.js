@@ -12,9 +12,17 @@
 
 module.exports = {
   staticFileGlobs: [
-    'index.html',
     'manifest.json',
-    'node_modules/@webcomponents/webcomponentsjs/*',
+    'src/**/*',
   ],
-  navigateFallback: 'index.html',
+  runtimeCaching: [
+    {
+      urlPattern: /\/@webcomponents\/webcomponentsjs\//,
+      handler: 'fastest'
+    },
+    {
+      urlPattern: /^https:\/\/apis.google.com\//,
+      handler: 'fastest'
+    }
+  ]
 };

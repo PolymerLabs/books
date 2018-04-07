@@ -150,8 +150,20 @@ class BookItem extends LitElement {
           box-sizing: border-box;
           border-top: 8px solid #fff;
           border-right: 30px solid #fff;
-          border-bottom: 60px solid #fff;
+          border-bottom: 66px solid #fff;
           border-left: 16px solid #fff;
+        }
+
+        .placeholder-info-inner-1 {
+          height: 12px;
+          margin-top: 24px;
+          background: #fff;
+        }
+
+        .placeholder-info-inner-2 {
+          height: 12px;
+          margin-top: 16px;
+          background: #fff;
         }
 
         .placeholder-desc {
@@ -202,8 +214,20 @@ class BookItem extends LitElement {
             height: auto;
             border-top: 16px solid #fff;
             border-right: 30px solid #fff;
-            border-bottom: 120px solid #fff;
+            border-bottom: 104px solid #fff;
             border-left: 16px solid #fff;
+          }
+
+          .placeholder-info-inner-1 {
+            height: 12px;
+            margin-top: 30px;
+            background: #fff;
+          }
+
+          .placeholder-info-inner-2 {
+            height: 12px;
+            margin-top: 16px;
+            background: #fff;
           }
 
           .placeholder-desc {
@@ -233,7 +257,10 @@ class BookItem extends LitElement {
       </a>
 
       <div class="placeholder" fadeout?="${info}">
-        <div class="placeholder-info"></div>
+        <div class="placeholder-info">
+          <div class="placeholder-info-inner-1"></div>
+          <div class="placeholder-info-inner-2"></div>
+        </div>
         <div class="placeholder-desc"></div>
       </div>
     `;
