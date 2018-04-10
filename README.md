@@ -19,7 +19,7 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
 - Shimmer placeholder while content is loading.  
-    ![shimmer](https://user-images.githubusercontent.com/116360/37745153-8a0529be-2d30-11e8-8427-fe0dfb4c5d90.gif)
+    ![shimmer](https://user-images.githubusercontent.com/116360/38531318-1ec79c38-3c24-11e8-8e8f-d2efdf190afa.gif)
 - Update the browser URL programmatically without causing page reload. In the app, we want to append query param to the URL when the search input’s value is committed.
 - Scroll to top on page change.
 - `<book-rating>`: Simple rating element.
