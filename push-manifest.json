@@ -1,0 +1,100 @@
+{
+  "/": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-home.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/home": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-home.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/explore": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-explore.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/detail": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-detail.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/viewer": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-viewer.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/favorites": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-favorites.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/about": {
+    "src/components/book-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/book-about.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  }
+}

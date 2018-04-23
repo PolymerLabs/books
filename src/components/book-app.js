@@ -22,6 +22,7 @@ import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js'
 import { menuIcon, backIcon, accountIcon } from './book-icons.js';
 import './snack-bar.js'
 import './book-input-decorator.js';
+import './speech-mic.js';
 
 import { store } from '../store.js';
 import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, closeDrawer } from '../actions/app.js';
@@ -40,7 +41,8 @@ class BookApp extends connect(store)(LitElement) {
     _authInitialized,
     _user,
     _query,
-    _bookId }) {
+    _bookId
+  }) {
 
     // Anything that's related to rendering should be done in here.
 
@@ -113,7 +115,7 @@ class BookApp extends connect(store)(LitElement) {
       }
 
       book-input-decorator {
-        max-width: 400px;
+        max-width: 460px;
         transform: translate3d(0, 374px, 0);
       }
 
@@ -221,8 +223,9 @@ class BookApp extends connect(store)(LitElement) {
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" aria-label="Search Books" autofocus type="search" value="${_query}"
-              on-change="${(e) => this._search(e)}">
+          <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${_query}"
+              on-change="${(e) => this._search(e.target.value)}">
+          <speech-mic slot="button" continuous interimResults on-result="${(e) => this._micResult(e)}"></speech-mic>
         </book-input-decorator>
         <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
@@ -294,6 +297,8 @@ class BookApp extends connect(store)(LitElement) {
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateWideLayout(matches)));
     store.dispatch(fetchUser());
+    this._input = this.shadowRoot.getElementById('input');
+    this._afterReady = true;
   }
 
   stateChanged(state) {
@@ -311,13 +316,11 @@ class BookApp extends connect(store)(LitElement) {
   }
 
   _offlineChanged(offline) {
-    const previousOffline = this._offline;
     store.dispatch(updateOffline(offline));
     // Don't show the snackbar on the first load of the page.
-    if (previousOffline === undefined) {
-      return;
+    if (this._afterReady) {
+      store.dispatch(showSnackbar());
     }
-    store.dispatch(showSnackbar());
   }
 
   _drawerOpenedChanged(opened) {
@@ -326,9 +329,18 @@ class BookApp extends connect(store)(LitElement) {
     }
   }
 
-  _search(e) {
-    window.history.pushState({}, '', `explore?q=${e.target.value}`);
+  _search(value) {
+    window.history.pushState({}, '', `/explore?q=${value}`);
     store.dispatch(navigate(window.location));
+  }
+
+  _micResult(e) {
+    const d = e.detail;
+    const value = d.completeTranscript;
+    this._input.value = value;
+    if (d.isFinal) {
+      this._search(value);
+    }
   }
 }
 

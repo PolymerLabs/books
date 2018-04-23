@@ -87,7 +87,7 @@ class BookViewer extends connect(store)(PageViewElement) {
 
   didRender({ _bookId, active }, changed, oldProps) {
     // google.books.Viewer requires the viewer to be visible when load(_bookId) is called
-    if (changed && 'active' in changed && active && _bookId) {
+    if (changed && ('active' in changed || '_bookId' in changed) && active && _bookId) {
       loadGoogleBooks().then(() => {
         this._viewer = new google.books.DefaultViewer(this.shadowRoot.querySelector('#viewer'));
         this._viewer.load(_bookId);

@@ -19,7 +19,7 @@ class BookInputDecorator extends LitElement {
           display: flex;
           align-items: center;
           width: 100%;
-          padding: 4px 0;
+          padding: 4px 2px;
           box-sizing: border-box;
           border-radius: 2px;
           box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
@@ -37,11 +37,11 @@ class BookInputDecorator extends LitElement {
         .decorator {
           flex: 1;
           position: relative;
-          margin: 0 8px 0 0;
+          margin: 0 2px;
           border-bottom: 1px solid #bbb;
         }
 
-        [name=input]::slotted(input) {
+        .decorator > ::slotted(input) {
           font-size: 1em;
           font-weight: 400;
           border: none;
@@ -77,6 +77,7 @@ class BookInputDecorator extends LitElement {
         <slot id="inputSlot" name="input"></slot>
         <div class="underline"></div>
       </div>
+      <slot name="button"></slot>
     `;
   }
 

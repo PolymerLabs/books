@@ -206,7 +206,7 @@ class BookDetail extends connect(store)(PageViewElement) {
           }
 
           .cover::after {
-            width: 200px;
+            width: 128px;
           }
 
           .info-desc {
@@ -242,7 +242,7 @@ class BookDetail extends connect(store)(PageViewElement) {
       <section hidden="${_showOffline}">
         <div class="info">
           <div class="cover" hero>
-            <book-image blur-up src="${poster}" placeholder="${thumbnail}"></book-image>
+            <book-image src="${thumbnail}"></book-image>
           </div>
           <div class="info-desc">
             <h2 class="title">${title}</h2>
