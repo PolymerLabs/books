@@ -8,7 +8,7 @@ Additionally it uses [OAuth 2.0](https://developers.google.com/identity/protocol
 
 The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
 
-![books screenshot](https://user-images.githubusercontent.com/116360/37804470-9fe1d1bc-2df1-11e8-9751-c073da685b40.jpg)
+![books screenshot](https://user-images.githubusercontent.com/116360/39160803-4d7a2696-4722-11e8-9ca2-d9b4dd1ac8f5.png)
 
 ## Features/highlights
 
@@ -18,6 +18,7 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 - OAuth 2.0 authorization to access Google APIs via [Google API Client Library](https://developers.google.com/api-client-library/javascript/reference/referencedocs)
 - Display offline UI when fetch returns failure while offline.
 - And once it comes back online, automatically re-fetch and update the page.
+- Uses the [SpeechRecognition API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition) to search by voice.
 - Shimmer placeholder while content is loading.  
     ![shimmer](https://user-images.githubusercontent.com/116360/38531318-1ec79c38-3c24-11e8-8e8f-d2efdf190afa.gif)
 - Update the browser URL programmatically without causing page reload. In the app, we want to append query param to the URL when the search input’s value is committed.
@@ -29,7 +30,7 @@ The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-star
 ## Setup
 ```bash
 $ npm i
-$ polymer serve # or similar that serve index.html for all routes
+$ npm start # or similar that serve index.html for all routes
 ```
 
 #### Enable OAuth for list/add/remove favorites on the authenticated user's bookshelf
@@ -39,11 +40,9 @@ https://developers.google.com/identity/protocols/OAuth2UserAgent#prerequisites
 
 ## Build and deploy
 ```bash
-$ git checkout deploy # checkout the deploy branch
-$ npm install
-$ npm run build
+$ npm run build:prpl-server
 ```
 Download the [Google App Engine SDK](https://cloud.google.com/appengine/downloads) and follow the instructions to install and create a new project. This app uses the Python SDK.
 ```bash
-$ gcloud app deploy --project <project>
+$ gcloud app deploy server/app.yaml --project <project>
 ```
