@@ -12,7 +12,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { searchIcon } from './book-icons.js';
 
 class BookInputDecorator extends LitElement {
-  render({ _focused }) {
+  _render({ _focused }) {
     return html`
       <style>
         :host {
@@ -81,8 +81,7 @@ class BookInputDecorator extends LitElement {
     `;
   }
 
-  async ready() {
-    super.ready();
+  async _firstRendered() {
     // Do all setup work after the first render.
     await this.renderComplete;
     // Assume the input is in the slot

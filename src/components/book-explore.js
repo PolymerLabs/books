@@ -9,31 +9,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html } from '@polymer/lit-element';
+import { PageViewElement } from './page-view-element.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
-// This element is connected to the redux store.
-import { store } from '../store.js';
-
-// We are lazy loading its reducer.
-import { books } from '../reducers/books.js';
-store.addReducers({
-  books
-});
-
-// We want to export this action so it can be called after import() returns the module
-export { searchBooks } from '../actions/books.js';
-
-import { refreshPage } from '../actions/app.js';
-
-import { PageViewElement } from './page-view-element.js';
 import './book-image.js';
 import './book-item.js';
 import './book-offline.js';
 
+// This element is connected to the redux store.
+import { store } from '../store.js';
+
+import { searchBooks } from '../actions/books.js';
+import { refreshPage } from '../actions/app.js';
+import { books } from '../reducers/books.js';
+
+// We are lazy loading its reducer.
+store.addReducers({
+  books
+});
+
 class BookExplore extends connect(store)(PageViewElement) {
-  render({ _query, _items, _showOffline }) {
+  _render({ _query, _items, _showOffline }) {
     updateMetadata({
       title: `${_query ? `${_query} - ` : ''}Books`,
       description: 'Search for books'
@@ -141,7 +139,7 @@ class BookExplore extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  stateChanged(state) {
+  _stateChanged(state) {
     this._query = state.books.query;
     this._items = state.books && state.books.items;
     this._showOffline = state.app.offline && state.books.failure;
@@ -149,3 +147,5 @@ class BookExplore extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('book-explore', BookExplore);
+
+export { searchBooks, refreshPage };

@@ -9,22 +9,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html } from '@polymer/lit-element';
+import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // This element is connected to the redux store.
 import { store } from '../store.js';
 
-// We are lazy loading its reducer.
+import { fetchBook } from '../actions/book.js';
 import { book, bookSelector } from '../reducers/book.js';
+
+// We are lazy loading its reducer.
 store.addReducers({
   book
 });
-
-// We want to export this action so it can be called after import() returns the module
-export { fetchBook } from '../actions/book.js';
-
-import { PageViewElement } from './page-view-element.js';
 
 let initCalled;
 const callbackPromise = new Promise((r) => window.__initGoogleBooks = r);
@@ -40,7 +38,7 @@ function loadGoogleBooks() {
 }
 
 class BookViewer extends connect(store)(PageViewElement) {
-  render({ _item }) {
+  _render({ _item }) {
     if (_item) {
       const info = _item.volumeInfo;
       updateMetadata({
@@ -80,12 +78,12 @@ class BookViewer extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  stateChanged(state) {
+  _stateChanged(state) {
     this._bookId = state.book.id;
     this._item = bookSelector(state);
   }
 
-  didRender({ _bookId, active }, changed, oldProps) {
+  _didRender({ _bookId, active }, changed, oldProps) {
     // google.books.Viewer requires the viewer to be visible when load(_bookId) is called
     if (changed && ('active' in changed || '_bookId' in changed) && active && _bookId) {
       loadGoogleBooks().then(() => {
@@ -97,3 +95,5 @@ class BookViewer extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('book-viewer', BookViewer);
+
+export { fetchBook };

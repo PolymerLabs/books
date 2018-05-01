@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { LitElement, html } from '@polymer/lit-element';
 
 class BookRating extends LitElement {
-  render({ rating }) {
+  _render({ rating }) {
     const width = (rating / 5) * 100 || 0;
 
     return html`

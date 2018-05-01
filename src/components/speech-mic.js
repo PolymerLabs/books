@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { LitElement, html, renderAttributes } from '@polymer/lit-element';
 
 class SpeechMic extends LitElement {
-  render({ _recognizing }) {
+  _render({ _recognizing }) {
     renderAttributes(this, {
       'recognizing': _recognizing
     });
@@ -108,7 +108,7 @@ class SpeechMic extends LitElement {
 
       <div class="ring1"></div>
       <div class="ring2"></div>
-      <button on-click="${() => this.toggle()}">
+      <button title="Search by voice" on-click="${() => this.toggle()}">
         <svg viewBox="0 0 24 24">
           <g><path d="M12,14c1.7,0,3-1.3,3-3l0-6c0-1.7-1.3-3-3-3c-1.7,0-3,1.3-3,3v6C9,12.7,10.3,14,12,14z M17.3,11c0,3-2.5,5.1-5.3,5.1c-2.8,0-5.3-2.1-5.3-5.1H5c0,3.4,2.7,6.2,6,6.7V21h2v-3.3c3.3-0.5,6-3.3,6-6.7H17.3z"></path></g>
         </svg>
@@ -127,11 +127,10 @@ class SpeechMic extends LitElement {
 
   constructor() {
     super();
-    this.language = 'en-US';
+    this.language = 'ja-JP';
   }
 
-  ready() {
-    super.ready();
+  _firstRendered() {
     if (window.webkitSpeechRecognition) {
       this._recognition = new webkitSpeechRecognition();
       this._recognition.continuous = this.continuous;

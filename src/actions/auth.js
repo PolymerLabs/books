@@ -91,6 +91,7 @@ const loadGapi = () => {
   if (!initCalled) {
     const script = document.createElement('script');
     script.src = '//apis.google.com/js/api:client.js?onload=__gapiCallback';
+    script.setAttribute('async', '');
     document.head.appendChild(script);
     initCalled = true;
   }

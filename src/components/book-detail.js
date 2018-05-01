@@ -9,38 +9,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html } from '@polymer/lit-element';
+import { PageViewElement } from './page-view-element.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 import { unsafeHTML } from 'lit-html/lib/unsafe-html.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
-// This element is connected to the redux store.
-import { store } from '../store.js';
-
-// We are lazy loading its reducer.
-import { book, bookSelector } from '../reducers/book.js';
-import { favorites } from '../reducers/favorites.js';
-store.addReducers({
-  book,
-  favorites
-});
-
-// We want to export this action so it can be called after import() returns the module
-export { fetchBook } from '../actions/book.js';
-export { fetchFavorites } from '../actions/favorites.js';
-
-import { refreshPage } from '../actions/app.js';
-import { saveFavorite } from '../actions/favorites.js';
-
-import { PageViewElement } from './page-view-element.js';
 import { BookButtonStyle } from './shared-styles.js';
 import { favoriteIcon, favoriteBorderIcon } from './book-icons.js';
 import './book-rating.js';
 import './book-offline.js';
 import './book-image.js';
 
+// This element is connected to the redux store.
+import { store } from '../store.js';
+
+import { refreshPage } from '../actions/app.js';
+import { fetchBook } from '../actions/book.js';
+import { fetchFavorites, saveFavorite } from '../actions/favorites.js';
+import { book, bookSelector } from '../reducers/book.js';
+import { favorites } from '../reducers/favorites.js';
+
+// We are lazy loading its reducer.
+store.addReducers({
+  book,
+  favorites
+});
+
 class BookDetail extends connect(store)(PageViewElement) {
-  render({_item, _favorites, _lastVisitedListPage, _showOffline, _isSignedIn}) {
+  _render({_item, _favorites, _lastVisitedListPage, _showOffline, _isSignedIn}) {
     // Don't render if there is no item.
     if (!_item) {
       return;
@@ -306,7 +303,7 @@ class BookDetail extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  stateChanged(state) {
+  _stateChanged(state) {
     this._item = bookSelector(state);
     this._favorites = state.favorites && state.favorites.items;
     this._lastVisitedListPage = state.app.lastVisitedListPage;
@@ -316,3 +313,5 @@ class BookDetail extends connect(store)(PageViewElement) {
 }
 
 window.customElements.define('book-detail', BookDetail);
+
+export { fetchBook, fetchFavorites };

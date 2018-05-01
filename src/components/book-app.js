@@ -29,7 +29,7 @@ import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, cl
 import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  render({
+  _render({
     appTitle,
     _page,
     _subTitle,
@@ -282,26 +282,26 @@ class BookApp extends connect(store)(LitElement) {
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/2.0/docs/devguide/gesture-events#use-passive-gesture-listeners
     setPassiveTouchGestures(true);
+    // get authenticated user
+    store.dispatch(fetchUser());
   }
 
-  didRender(props, changed) {
+  _didRender(props, changed) {
     if ('_page' in changed) {
       window.scrollTo(0, 0);
     }
   }
 
-  ready() {
-    super.ready();
+  _firstRendered() {
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => this._offlineChanged(offline));
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateWideLayout(matches)));
-    store.dispatch(fetchUser());
     this._input = this.shadowRoot.getElementById('input');
     this._afterReady = true;
   }
 
-  stateChanged(state) {
+  _stateChanged(state) {
     this._page = state.app.page;
     this._subTitle = state.app.subTitle;
     this._lastVisitedListPage = state.app.lastVisitedListPage;
