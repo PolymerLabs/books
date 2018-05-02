@@ -242,7 +242,7 @@ class BookItem extends LitElement {
 
       <a href="/detail/${id}">
         <div class="info">
-          <book-image src="${thumbnail}"></book-image>
+          <book-image src="${thumbnail}" alt="${title}"></book-image>
           <div class="info-section">
             <div class="title-container">
               <h2 class="title">${title}</h2><slot></slot>

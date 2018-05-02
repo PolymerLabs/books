@@ -239,7 +239,7 @@ class BookDetail extends connect(store)(PageViewElement) {
       <section hidden="${_showOffline}">
         <div class="info">
           <div class="cover" hero>
-            <book-image src="${thumbnail}"></book-image>
+            <book-image src="${thumbnail}" alt="${title}"></book-image>
           </div>
           <div class="info-desc">
             <h2 class="title">${title}</h2>

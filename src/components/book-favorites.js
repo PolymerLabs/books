@@ -145,7 +145,7 @@ class BookFavorites extends connect(store)(PageViewElement) {
             ${repeat(itemList, (item) => html`
               <li>
                 <book-item item="${item}">
-                  <button class="fav-button" on-click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
+                  <button class="fav-button" title="Remove favorite" on-click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
                 </book-item>
               </li>
             `)}
