@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>views a11y</title>
+    <title>views render</title>
 
     <script>
       // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
@@ -73,54 +73,86 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       import { store } from '../../src/store.js';
       import { UPDATE_OFFLINE } from '../../src/actions/app.js';
       import { REQUEST_BOOKS, RECEIVE_BOOKS, FAIL_BOOKS } from '../../src/actions/books.js';
-      import { REQUEST_BOOK, RECEIVE_BOOK } from '../../src/actions/book.js';
-      import { RECEIVE_FAVORITES } from '../../src/actions/favorites.js';
+      import { REQUEST_BOOK, RECEIVE_BOOK, FAIL_BOOK } from '../../src/actions/book.js';
+      import { RECEIVE_FAVORITES, FAIL_FAVORITES } from '../../src/actions/favorites.js';
       import { SET_USER, AUTH_INITIALIZED } from '../../src/actions/auth.js';
 
-      suite('views a11y tests', function() {
+      suite('test views', function() {
         test('about', function() {
-          const el = fixture('about');
-          return axeReport(el);
+          const view = fixture('about');
+          const a = view.shadowRoot.querySelector('a');
+          assert.ok(a);
+          assert.equal(a.getAttribute('href'), 'http://books.google.com', 'has a link to http://books.google.com');
         });
 
         test('home', function() {
-          const el = fixture('home');
-          return axeReport(el);
+          const view = fixture('home');
+          assert.ok(view.shadowRoot.querySelector('book-image'));
         });
 
         test('explore', function() {
           store.dispatch({type: REQUEST_BOOKS, query: 'google'});
           store.dispatch({type: RECEIVE_BOOKS, query: 'google', items: book_items});
-          const el = fixture('explore');
-          return axeReport(el);
+          const view = fixture('explore');
+          const bookImage = view.shadowRoot.querySelector('book-image');
+          assert.ok(bookImage);
+          assert.ok(bookImage.hasAttribute('hidden'), 'book-image is hidden');
+          const ul = view.shadowRoot.querySelector('ul');
+          assert.ok(ul);
+          assert.notOk(ul.hasAttribute('hidden'), 'list is not hidden');
+          assert.equal(ul.querySelectorAll('book-item').length, 2, 'list has 2 book-items');
+          const item = ul.querySelector('book-item');
+          assert.ok(item.shadowRoot.querySelector('book-image'), 'book-item has book-image');
         });
 
         test('explore - offline', function() {
           store.dispatch({type: REQUEST_BOOKS, query: 'google'});
           store.dispatch({type: FAIL_BOOKS, query: 'google'});
           store.dispatch({type: UPDATE_OFFLINE, offline: true});
-          const el = fixture('explore');
-          return axeReport(el);
+          const view = fixture('explore');
+          assert.notOk(view.shadowRoot.querySelector('book-offline').hasAttribute('hidden'), 'book-offline is not hidden');
         });
 
         test('detail', function() {
           store.dispatch({type: REQUEST_BOOK, id: 'UVz06fnwJvUC'});
           store.dispatch({type: RECEIVE_BOOK, id: 'UVz06fnwJvUC', item: book_items[0]});
-          const el = fixture('detail');
-          return axeReport(el);
+          const view = fixture('detail');
+          assert.ok(view.shadowRoot.querySelector('book-offline').hasAttribute('hidden'), 'book-offline is hidden');
+          assert.ok(view.shadowRoot.querySelector('.info'), 'has info');
+          assert.ok(view.shadowRoot.querySelector('book-rating'), 'has rating');
+        });
+
+        test('detail - offline', function() {
+          store.dispatch({type: REQUEST_BOOK, id: 'UVz06fnwJvUC'});
+          store.dispatch({type: FAIL_BOOK, id: 'UVz06fnwJvUC'});
+          const view = fixture('detail');
+          assert.notOk(view.shadowRoot.querySelector('book-offline').hasAttribute('hidden'), 'book-offline is not hidden');
         });
 
         test('favorites', function() {
           store.dispatch({type: AUTH_INITIALIZED});
           store.dispatch({type: SET_USER, user: {id: 'foo'}});
           store.dispatch({type: RECEIVE_FAVORITES, items: book_items});
-          const el = fixture('favorites');
-          return axeReport(el);
+          const view = fixture('favorites');
+          const ul = view.shadowRoot.querySelector('ul');
+          assert.ok(ul);
+          assert.notOk(ul.hasAttribute('hidden'), 'list is not hidden');
+          assert.equal(ul.querySelectorAll('book-item').length, 2, 'list has 2 book-items');
+          const item = ul.querySelector('book-item');
+          assert.ok(item.shadowRoot.querySelector('book-image'), 'book-item has book-image');
+        });
+
+        test('favorites - offline', function() {
+          store.dispatch({type: AUTH_INITIALIZED});
+          store.dispatch({type: SET_USER, user: {id: 'foo'}});
+          store.dispatch({type: FAIL_FAVORITES});
+          const view = fixture('favorites');
+          assert.notOk(view.shadowRoot.querySelector('book-offline').hasAttribute('hidden'), 'book-offline is not hidden');
         });
 
         test('viewer', function() {
-          const el = fixture('viewer');
-          return axeReport(el);
+          const view = fixture('viewer');
+          assert.ok(view.shadowRoot.querySelector('#viewer'), 'has viewer');
         });
       });
     </script>

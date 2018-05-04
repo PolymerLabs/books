@@ -23,7 +23,7 @@ import { store } from '../store.js';
 
 import { searchBooks } from '../actions/books.js';
 import { refreshPage } from '../actions/app.js';
-import { books } from '../reducers/books.js';
+import { books, itemListSelector } from '../reducers/books.js';
 
 // We are lazy loading its reducer.
 store.addReducers({
@@ -36,9 +36,6 @@ class BookExplore extends connect(store)(PageViewElement) {
       title: `${_query ? `${_query} - ` : ''}Books`,
       description: 'Search for books'
     });
-
-    // actual items or placeholder items if the items haven't loaded yet.
-    const itemList = _items ? Object.values(_items) : [{},{},{},{},{}];
 
     return html`
       <style>
@@ -116,7 +113,7 @@ class BookExplore extends connect(store)(PageViewElement) {
 
       <section hidden="${_showOffline}">
         <ul class="books" hidden="${!_query}">
-          ${repeat(itemList, (item) => html`
+          ${repeat(_items, (item) => html`
             <li>
               <book-item item="${item}"></book-item>
             </li>
@@ -141,7 +138,7 @@ class BookExplore extends connect(store)(PageViewElement) {
   // This is called every time something is updated in the store.
   _stateChanged(state) {
     this._query = state.books.query;
-    this._items = state.books && state.books.items;
+    this._items = itemListSelector(state);
     this._showOffline = state.app.offline && state.books.failure;
   }
 }

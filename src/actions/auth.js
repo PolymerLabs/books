@@ -8,8 +8,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { fetchFavorites } from "./favorites.js";
-
 export const SET_USER = 'SET_USER';
 export const AUTH_INITIALIZED = 'AUTH_INITIALIZED';
 
@@ -46,7 +44,6 @@ export const signIn = () => (dispatch) => {
     GoogleAuth.signIn({ prompt: 'select_account' })
       .then((googleUser) => {
         dispatch(setUser(getUserFromGoogleUser(googleUser)));
-        dispatch(fetchFavorites(true));
       });
   });
 };
@@ -56,7 +53,6 @@ export const signOut = () => (dispatch) => {
     GoogleAuth.signOut()
       .then(() => {
         dispatch(setUser());
-        dispatch(fetchFavorites(true));
       });
   });
 }

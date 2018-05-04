@@ -9,23 +9,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { installRouter } from 'pwa-helpers/router.js';
-import { installOfflineWatcher } from 'pwa-helpers/network.js';
-import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+
 import { menuIcon, backIcon, accountIcon } from './book-icons.js';
 import './snack-bar.js'
 import './book-input-decorator.js';
 import './speech-mic.js';
 
+import { connect } from 'pwa-helpers/connect-mixin.js';
+import { installRouter } from 'pwa-helpers/router.js';
+import { installOfflineWatcher } from 'pwa-helpers/network.js';
+import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
+
 import { store } from '../store.js';
-import { navigate, updateOffline, updateWideLayout, showSnackbar, openDrawer, closeDrawer } from '../actions/app.js';
+import { navigate, updateLocationURL, updateOffline, updateLayout, showSnackbar, updateDrawerState } from '../actions/app.js';
 import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
@@ -51,7 +53,7 @@ class BookApp extends connect(store)(LitElement) {
     // True to hide the input.
     const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
     // True to make the search input aligns at the top inside the header instead of inside the main content.
-    const inputAtTop = !_wideLayout || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
+    const inputAtTop = ('ontouchstart' in window) || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
     // back button href
     const backHref = _page === 'detail' ?
         (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
@@ -213,7 +215,7 @@ class BookApp extends connect(store)(LitElement) {
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
         <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}"
-            on-click="${() => this._drawerOpenedChanged(true)}">${menuIcon}</button>
+            on-click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
         <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/explore">${appTitle}</a></div>
         <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
@@ -224,7 +226,7 @@ class BookApp extends connect(store)(LitElement) {
       <app-toolbar class="toolbar-bottom" sticky>
         <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
           <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${_query}"
-              on-change="${(e) => this._search(e.target.value)}">
+              on-change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
           <speech-mic slot="button" continuous interimResults on-result="${(e) => this._micResult(e)}"></speech-mic>
         </book-input-decorator>
         <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
@@ -232,8 +234,8 @@ class BookApp extends connect(store)(LitElement) {
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}" on-opened-changed="${e => this._drawerOpenedChanged(e.target.opened)}">
-      <nav class="drawer-list" on-click="${e => this._drawerOpenedChanged(false)}">
+    <app-drawer opened="${_drawerOpened}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+      <nav class="drawer-list" on-click="${e => store.dispatch(updateDrawerState(false))}">
         <a selected?="${_page === 'explore'}" href="/explore?q=${_query}">Home</a>
         <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
         <a selected?="${_page === 'about'}" href="/about">About</a>
@@ -294,11 +296,10 @@ class BookApp extends connect(store)(LitElement) {
 
   _firstRendered() {
     installRouter((location) => store.dispatch(navigate(location)));
-    installOfflineWatcher((offline) => this._offlineChanged(offline));
+    installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
-        (matches) => store.dispatch(updateWideLayout(matches)));
+        (matches) => store.dispatch(updateLayout(matches)));
     this._input = this.shadowRoot.getElementById('input');
-    this._afterReady = true;
   }
 
   _stateChanged(state) {
@@ -315,31 +316,12 @@ class BookApp extends connect(store)(LitElement) {
     this._bookId = state.book && state.book.id;
   }
 
-  _offlineChanged(offline) {
-    store.dispatch(updateOffline(offline));
-    // Don't show the snackbar on the first load of the page.
-    if (this._afterReady) {
-      store.dispatch(showSnackbar());
-    }
-  }
-
-  _drawerOpenedChanged(opened) {
-    if (opened !== this._drawerOpened) {
-      store.dispatch(opened ? openDrawer() : closeDrawer());
-    }
-  }
-
-  _search(value) {
-    window.history.pushState({}, '', `/explore?q=${value}`);
-    store.dispatch(navigate(window.location));
-  }
-
   _micResult(e) {
     const d = e.detail;
     const value = d.completeTranscript;
     this._input.value = value;
     if (d.isFinal) {
-      this._search(value);
+      store.dispatch(updateLocationURL(`/explore?q=${value}`));
     }
   }
 }

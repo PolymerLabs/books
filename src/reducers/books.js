@@ -46,3 +46,10 @@ export const books = (state = {query: null}, action) => {
 }
 
 export const itemsSelector = state => state.books && state.books.items;
+
+export const itemListSelector = createSelector(
+  itemsSelector,
+  (items) => {
+    return items ? Object.keys(items).map(key => items[key]) : [{},{},{},{},{}];
+  }
+);

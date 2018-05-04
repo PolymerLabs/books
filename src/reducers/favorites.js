@@ -8,6 +8,7 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
+import { createSelector } from 'reselect';
 import {
   REQUEST_FAVORITES, RECEIVE_FAVORITES, FAIL_FAVORITES,
   ADD_FAVORITE, REMOVE_FAVORITE
@@ -62,3 +63,17 @@ export const favorites = (state = {}, action) => {
 }
 
 export const favoritesSelector = state => state.favorites && state.favorites.items;
+
+export const favoriteListSelector = createSelector(
+  favoritesSelector,
+  (items) => {
+    if (!items) {
+      return;
+    }
+    const itemList = Object.keys(items).map(key => items[key]);
+    itemList.sort((a, b) => {
+      return a.userInfo && b.userInfo && (a.userInfo.updated > b.userInfo.updated);
+    });
+    return itemList;
+  }
+);

@@ -25,7 +25,7 @@ import { store } from '../store.js';
 import { refreshPage } from '../actions/app.js';
 import { signIn } from '../actions/auth.js';
 import { fetchFavorites, saveFavorite } from '../actions/favorites.js';
-import { favorites } from '../reducers/favorites.js';
+import { favorites, favoriteListSelector } from '../reducers/favorites.js';
 
 // We are lazy loading its reducer.
 store.addReducers({
@@ -37,11 +37,6 @@ class BookFavorites extends connect(store)(PageViewElement) {
     updateMetadata({
       title: 'My Favorites - Books',
       description: 'My Favorites'
-    });
-
-    const itemList = _items ? Object.values(_items) : [];
-    itemList.sort((a, b) => {
-      return a.userInfo && b.userInfo && (a.userInfo.updated > b.userInfo.updated);
     });
 
     return html`
@@ -137,12 +132,12 @@ class BookFavorites extends connect(store)(PageViewElement) {
 
       <section hidden="${_showOffline}">
         <div class="favorites-section" hidden="${!_authInitialized || !_user}">
-          <div class="favorites-empty" hidden="${!_authInitialized || !_items || itemList.length}">
+          <div class="favorites-empty" hidden="${!_authInitialized || !_items || _items.length}">
             <h3>Your favorites are empty</h3>
             <p>Go <a href="/explore">find some books</a> and add to your favorites</p>
           </div>
           <ul class="books">
-            ${repeat(itemList, (item) => html`
+            ${_items && repeat(_items, (item) => html`
               <li>
                 <book-item item="${item}">
                   <button class="fav-button" title="Remove favorite" on-click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
@@ -171,7 +166,7 @@ class BookFavorites extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   _stateChanged(state) {
-    this._items = state.favorites && state.favorites.items;
+    this._items = favoriteListSelector(state);
     this._authInitialized = state.auth.initialized;
     this._user = state.auth.user;
     this._showOffline = state.app.offline && state.favorites.failure;
