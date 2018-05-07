@@ -6,7 +6,7 @@ Books is a simple Google Books PWA. It uses [Google Books API](https://developer
 
 Additionally it uses [OAuth 2.0](https://developers.google.com/identity/protocols/OAuth2UserAgent) authorization to retrieve a listing of the Favorites on the authenticated user's bookshelf. As well as add/remove favorite on the authenticated user's bookshelf.
 
-The app is built using [PWA Starter Kit](https://github.com/PolymerLabs/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/PolymerLabs/pwa-starter-kit/wiki) for configuring and personalizing.
+The app is built using [PWA Starter Kit](https://github.com/Polymer/pwa-starter-kit). Using the starter-template as the starting point and the [wiki](https://github.com/Polymer/pwa-starter-kit/wiki) for configuring and personalizing.
 
 ![books screenshot](https://user-images.githubusercontent.com/116360/39160803-4d7a2696-4722-11e8-9ca2-d9b4dd1ac8f5.png)
 
