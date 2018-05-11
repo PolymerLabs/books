@@ -10,11 +10,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { LitElement, html } from '@polymer/lit-element';
 
-import '@polymer/app-layout/app-drawer/app-drawer.js';
-import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
+import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 
 import { menuIcon, backIcon, accountIcon } from './book-icons.js';
 import './snack-bar.js'
@@ -34,6 +32,7 @@ class BookApp extends connect(store)(LitElement) {
   _render({
     appTitle,
     _page,
+    _lazyResourcesLoaded,
     _subTitle,
     _lastVisitedListPage,
     _offline,
@@ -234,7 +233,7 @@ class BookApp extends connect(store)(LitElement) {
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+    <app-drawer opened="${_drawerOpened}" hidden="${!_lazyResourcesLoaded}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list" on-click="${e => store.dispatch(updateDrawerState(false))}">
         <a selected?="${_page === 'explore'}" href="/explore?q=${_query}">Home</a>
         <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
@@ -266,6 +265,7 @@ class BookApp extends connect(store)(LitElement) {
     return {
       appTitle: String,
       _page: String,
+      _lazyResourcesLoaded: Boolean,
       _subTitle: String,
       _lastVisitedListPage: Boolean,
       _offline: Boolean,
@@ -277,15 +277,6 @@ class BookApp extends connect(store)(LitElement) {
       _query: String,
       _bookId: String
     }
-  }
-
-  constructor() {
-    super();
-    // To force all event listeners for gestures to be passive.
-    // See https://www.polymer-project.org/2.0/docs/devguide/gesture-events#use-passive-gesture-listeners
-    setPassiveTouchGestures(true);
-    // get authenticated user
-    store.dispatch(fetchUser());
   }
 
   _didRender(props, changed) {
@@ -300,10 +291,13 @@ class BookApp extends connect(store)(LitElement) {
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateLayout(matches)));
     this._input = this.shadowRoot.getElementById('input');
+    // get authenticated user
+    store.dispatch(fetchUser());
   }
 
   _stateChanged(state) {
     this._page = state.app.page;
+    this._lazyResourcesLoaded = state.app.lazyResourcesLoaded;
     this._subTitle = state.app.subTitle;
     this._lastVisitedListPage = state.app.lastVisitedListPage;
     this._offline = state.app.offline;

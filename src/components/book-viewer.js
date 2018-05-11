@@ -44,7 +44,7 @@ class BookViewer extends connect(store)(PageViewElement) {
       updateMetadata({
         title: `${info.title} - Books`,
         description: info.description,
-        img: info.imageLinks.thumbnail.replace('http', 'https')
+        image: info.imageLinks.thumbnail.replace('http', 'https')
       });
     }
 

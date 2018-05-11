@@ -61,7 +61,7 @@ class BookDetail extends connect(store)(PageViewElement) {
     updateMetadata({
       title: `${title} - Books`,
       description: info.description,
-      img: thumbnail
+      image: thumbnail
     });
 
     return html`

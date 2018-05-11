@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { UPDATE_PAGE, UPDATE_SUBTITLE, UPDATE_OFFLINE, UPDATE_WIDE_LAYOUT,
+import { UPDATE_PAGE, RECEIVE_LAZY_RESOURCES, UPDATE_SUBTITLE, UPDATE_OFFLINE, UPDATE_WIDE_LAYOUT,
          OPEN_SNACKBAR, CLOSE_SNACKBAR, UPDATE_DRAWER_STATE } from '../actions/app.js';
 
 const app = (state = {drawerOpened: false}, action) => {
@@ -19,6 +19,11 @@ const app = (state = {drawerOpened: false}, action) => {
         ...state,
         page: p,
         lastVisitedListPage: p === 'explore' || p === 'favorites' ? p : state.lastVisitedListPage
+      };
+    case RECEIVE_LAZY_RESOURCES:
+      return {
+        ...state,
+        lazyResourcesLoaded: true
       };
     case UPDATE_SUBTITLE:
       return {

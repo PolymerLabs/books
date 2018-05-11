@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 export const UPDATE_PAGE = 'UPDATE_PAGE';
+export const RECEIVE_LAZY_RESOURCES = 'RECEIVE_LAZY_RESOURCES';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_WIDE_LAYOUT = 'UPDATE_WIDE_LAYOUT';
 export const UPDATE_DRAWER_STATE = 'UPDATE_DRAWER_STATE';
@@ -87,6 +88,17 @@ const loadPage = (page, query, bookId) => async (dispatch, getState) => {
   }
 
   dispatch(updatePage(page));
+
+  const lazyLoadComplete = getState().app.lazyResourcesLoaded;
+  // load lazy resources after render and set `lazyLoadComplete` when done.
+  if (!lazyLoadComplete) {
+    requestAnimationFrame(async () => {
+      await import('../components/lazy-resources.js');
+      dispatch({
+        type: RECEIVE_LAZY_RESOURCES
+      });
+    });
+  }
 }
 
 export const refreshPage = () => (dispatch, getState) => {
