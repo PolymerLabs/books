@@ -80,6 +80,11 @@ class BookInputDecorator extends LitElement {
       <slot name="button"></slot>
     `;
   }
+  static get properties() {
+    return {
+      _focused: Boolean
+    }
+  }
 
   async _firstRendered() {
     // Do all setup work after the first render.
