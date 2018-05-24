@@ -16,13 +16,13 @@
     "serve:static": "polymer serve --port 5000 build/es6-bundled",
     "deploy": "gcloud app deploy server/app.yaml --project books-pwakit",
     "test": "npm run test:unit",
-    "test:unit": "polymer test --module-resolution=node --npm -l chrome -l firefox"
+    "test:unit": "polymer test --module-resolution=node --npm"
   },
   "dependencies": {
-    "@polymer/app-layout": "^3.0.0-pre.18",
+    "@polymer/app-layout": "^3.0.0-pre.19",
     "@polymer/lit-element": "^0.5.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
-    "pwa-helpers": "^0.8.0",
+    "pwa-helpers": "^0.8.2",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1"
@@ -31,10 +31,10 @@
     "axe-core": "^3.0.0",
     "chai": "^4.1.2",
     "mocha": "^5.1.0",
-    "polymer-cli": "^1.7.0",
+    "polymer-cli": "^1.7.2",
     "prpl-server": "^1.1.0",
     "renamer": "^0.6.1",
-    "replace": "^0.3.0",
-    "wct-browser-legacy": "^1.0.0"
+    "replace": "^1.0.0",
+    "wct-browser-legacy": "^1.0.1"
   }
 }

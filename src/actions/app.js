@@ -37,7 +37,6 @@ const loadPage = (page, query, bookId) => async (dispatch, getState) => {
   let module;
   switch(page) {
     case 'home':
-      await import('../components/book-home.js');
       break;
     case 'explore':
       module = await import('../components/book-explore.js');
