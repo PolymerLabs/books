@@ -64,6 +64,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta property="og:site_name" content="books-app">
     <meta property="og:image" content="images/manifest/icon-144x144.png" />
 
+    <link rel="preconnect" href="https://apis.google.com">
+    <link rel="preconnect" href="https://accounts.google.com">
+    <link rel="preconnect" href="https://ssl.gstatic.com">
+
     <script>
       // Load and register pre-caching Service Worker
       if ('serviceWorker' in navigator) {
@@ -89,10 +93,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: #fafafa;
         -webkit-font-smoothing: antialiased;
       }
+      book-app[unresolved] {
+        display: block;
+        min-height: 101vh;
+        line-height: 66px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        padding: 0 16px;
+        overflow: visible;
+      }
     </style>
   </head>
   <body>
-    <book-app appTitle="Books"></book-app>
+    <book-app appTitle="BOOKS" unresolved>BOOKS</book-app>
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
