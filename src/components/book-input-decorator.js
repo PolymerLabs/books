@@ -80,6 +80,7 @@ class BookInputDecorator extends LitElement {
       <slot name="button"></slot>
     `;
   }
+  
   static get properties() {
     return {
       _focused: Boolean
