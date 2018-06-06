@@ -15,7 +15,7 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 
 import { menuIcon, backIcon, accountIcon } from './book-icons.js';
-import './snack-bar.js'
+import './snack-bar.js';
 import './book-input-decorator.js';
 import './speech-mic.js';
 import './book-home.js';
