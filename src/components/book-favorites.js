@@ -130,9 +130,9 @@ class BookFavorites extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden="${_showOffline}">
-        <div class="favorites-section" hidden="${!_authInitialized || !_user}">
-          <div class="favorites-empty" hidden="${!_authInitialized || !_items || _items.length}">
+      <section hidden?="${_showOffline}">
+        <div class="favorites-section" hidden?="${!_authInitialized || !_user}">
+          <div class="favorites-empty" hidden?="${!_authInitialized || !_items || _items.length}">
             <h3>Your favorites are empty</h3>
             <p>Go <a href="/explore">find some books</a> and add to your favorites</p>
           </div>
@@ -147,13 +147,13 @@ class BookFavorites extends connect(store)(PageViewElement) {
           </ul>
         </div>
 
-        <div class="signin-section" hidden="${!_authInitialized || _user}">
+        <div class="signin-section" hidden?="${!_authInitialized || _user}">
           <p>Please sign in to see the favorites.</p>
           <button class="book-button" on-click="${() => store.dispatch(signIn())}">Sign in</button>
         </div>
       </section>
 
-      <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline hidden?="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 

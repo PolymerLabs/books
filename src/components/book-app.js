@@ -111,6 +111,8 @@ class BookApp extends connect(store)(LitElement) {
         text-transform: uppercase;
         color: inherit;
         pointer-events: auto;
+        /* required for IE 11, so this <a> can receive pointer events */
+        display: inline-block;
       }
 
       .subtitle {
@@ -184,6 +186,10 @@ class BookApp extends connect(store)(LitElement) {
         font-weight: bold;
       }
 
+      main {
+        display: block;
+      }
+
       .main-content {
         padding-top: var(--app-header-height);
         min-height: var(--app-main-content-min-height);
@@ -226,17 +232,17 @@ class BookApp extends connect(store)(LitElement) {
         </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
-        <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
+        <book-input-decorator top?="${inputAtTop}" hidden?="${hideInput}">
           <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${query}"
               on-change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
           <speech-mic slot="button" continuous interimResults on-result="${(e) => this._micResult(e)}"></speech-mic>
         </book-input-decorator>
-        <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
+        <h4 class="subtitle" hidden?="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}" hidden="${!_lazyResourcesLoaded}"
+    <app-drawer opened="${_drawerOpened}" hidden?="${!_lazyResourcesLoaded}"
         on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list" on-click="${e => store.dispatch(updateDrawerState(false))}">
         <a selected?="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
@@ -246,7 +252,7 @@ class BookApp extends connect(store)(LitElement) {
     </app-drawer>
 
     <!-- Main content -->
-    <main class="main-content">
+    <main role="main" class="main-content">
       <book-home class="_page" active?="${_page === 'home'}"></book-home>
       <book-explore class="_page" active?="${_page === 'explore'}"></book-explore>
       <book-detail class="_page" active?="${_page === 'detail'}"></book-detail>
