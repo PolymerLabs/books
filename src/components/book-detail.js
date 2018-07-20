@@ -236,24 +236,24 @@ class BookDetail extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden="${_showOffline}">
+      <section hidden?="${_showOffline}">
         <div class="info">
           <div class="cover" hero>
             <book-image src="${thumbnail}" alt="${title}"></book-image>
           </div>
           <div class="info-desc">
             <h2 class="title">${title}</h2>
-            <div class="info-item" hidden="${!author}">${author} - ${date}</div>
-            <div class="info-item" hidden="${!pageCount}" desktop>${pageCount} pages</div>
-            <div class="info-item" hidden="${!publisher}" desktop>${publisher} - publisher</div>
+            <div class="info-item" hidden?="${!author}">${author} - ${date}</div>
+            <div class="info-item" hidden?="${!pageCount}" desktop>${pageCount} pages</div>
+            <div class="info-item" hidden?="${!publisher}" desktop>${publisher} - publisher</div>
             <div class="flex"></div>
-            <div class="fav-btn-container" hidden="${_lastVisitedListPage === 'favorites'}">
-              <button class="fav-button" on-click="${() => store.dispatch(saveFavorite(_item, isFavorite))}" hidden="${!_isSignedIn}">
+            <div class="fav-btn-container" hidden?="${_lastVisitedListPage === 'favorites'}">
+              <button class="fav-button" on-click="${() => store.dispatch(saveFavorite(_item, isFavorite))}" hidden?="${!_isSignedIn}">
                 ${isFavorite ? favoriteIcon : favoriteBorderIcon} ${isFavorite ? 'Added to Favorites' : 'Add to Favorites'}
               </button>
             </div>
             <div class="preview-btn-container">
-              <a href="/viewer/${_item.id}" class="book-button" hidden="${!accessInfo.embeddable}">PREVIEW</a>
+              <a href="/viewer/${_item.id}" class="book-button" hidden?="${!accessInfo.embeddable}">PREVIEW</a>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ class BookDetail extends connect(store)(PageViewElement) {
           <h3>Description</h3>
           ${unsafeHTML(info.description || info.subtitle || 'None')}
         </div>
-        <div class="desc" hidden="${categories.length === 0}">
+        <div class="desc" hidden?="${categories.length === 0}">
           <h3>Categories</h3>
           <ul>
             ${repeat(categories, (item) => html`
@@ -273,7 +273,7 @@ class BookDetail extends connect(store)(PageViewElement) {
             `)}
           </ul>
         </div>
-        <div class="desc" hidden="${identifiers.length === 0}">
+        <div class="desc" hidden?="${identifiers.length === 0}">
           <h3>ISBN</h3>
           <ul>
             ${repeat(identifiers, (item) => html`
@@ -290,7 +290,7 @@ class BookDetail extends connect(store)(PageViewElement) {
         </div>
       </section>
 
-      <book-offline hidden="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline hidden?="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 

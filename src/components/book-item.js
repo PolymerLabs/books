@@ -20,7 +20,7 @@ class BookItem extends LitElement {
     const id = item ? item.id : '';
     const title = info ? info.title : '';
     const author = info ? info.authors && info.authors.join(', ') : '';
-    const thumbnail = info ? info.imageLinks.thumbnail.replace('http', 'https').replace('&edge=curl', '') : '';
+    const thumbnail = info ? info.imageLinks.thumbnail.replace('http', 'https').replace('&edge=curl', '') : null;
     const date = info ? new Date(info.publishedDate).getFullYear() : '';
     const rating = info && info.averageRating;
     const desc = info ? unsafeHTML(info.description || info.subtitle || '<i>No descriptions.</i>') : '';
@@ -247,8 +247,8 @@ class BookItem extends LitElement {
             <div class="title-container">
               <h2 class="title">${title}</h2><slot></slot>
             </div>
-            <div class="author info-item" hidden="${!author}">${author} - ${date}</div>
-            <div class="info-item" hidden="${!info}">
+            <div class="author info-item" hidden?="${!author}">${author} - ${date}</div>
+            <div class="info-item" hidden?="${!info}">
               <book-rating rating="${rating}"></book-rating>
             </div>
           </div>

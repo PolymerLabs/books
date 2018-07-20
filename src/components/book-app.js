@@ -15,9 +15,10 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 
 import { menuIcon, backIcon, accountIcon } from './book-icons.js';
-import './snack-bar.js'
+import './snack-bar.js';
 import './book-input-decorator.js';
 import './speech-mic.js';
+import './book-home.js';
 
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installRouter } from 'pwa-helpers/router.js';
@@ -52,10 +53,12 @@ class BookApp extends connect(store)(LitElement) {
     // True to hide the input.
     const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
     // True to make the search input aligns at the top inside the header instead of inside the main content.
-    const inputAtTop = ('ontouchstart' in window) || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
+    const inputAtTop = ('ontouchstart' in window || !_wideLayout) || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
     // back button href
     const backHref = _page === 'detail' ?
         (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
+    // query
+    const query = _page === 'home' ? '' : _query;
 
     return html`
     <style>
@@ -108,6 +111,8 @@ class BookApp extends connect(store)(LitElement) {
         text-transform: uppercase;
         color: inherit;
         pointer-events: auto;
+        /* required for IE 11, so this <a> can receive pointer events */
+        display: inline-block;
       }
 
       .subtitle {
@@ -181,6 +186,10 @@ class BookApp extends connect(store)(LitElement) {
         font-weight: bold;
       }
 
+      main {
+        display: block;
+      }
+
       .main-content {
         padding-top: var(--app-header-height);
         min-height: var(--app-main-content-min-height);
@@ -216,33 +225,34 @@ class BookApp extends connect(store)(LitElement) {
         <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}"
             on-click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
         <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
-        <div main-title><a href="/explore">${appTitle}</a></div>
+        <div main-title><a href="/">${appTitle}</a></div>
         <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
             on-click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
           ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
         </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
-        <book-input-decorator top?="${inputAtTop}" hidden="${hideInput}">
-          <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${_query}"
+        <book-input-decorator top?="${inputAtTop}" hidden?="${hideInput}">
+          <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${query}"
               on-change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
           <speech-mic slot="button" continuous interimResults on-result="${(e) => this._micResult(e)}"></speech-mic>
         </book-input-decorator>
-        <h4 class="subtitle" hidden="${!hideInput}">${_subTitle}</h4>
+        <h4 class="subtitle" hidden?="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}" hidden="${!_lazyResourcesLoaded}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+    <app-drawer opened="${_drawerOpened}" hidden?="${!_lazyResourcesLoaded}"
+        on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list" on-click="${e => store.dispatch(updateDrawerState(false))}">
-        <a selected?="${_page === 'explore'}" href="/explore?q=${_query}">Home</a>
+        <a selected?="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
         <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
         <a selected?="${_page === 'about'}" href="/about">About</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
-    <main class="main-content">
+    <main role="main" class="main-content">
       <book-home class="_page" active?="${_page === 'home'}"></book-home>
       <book-explore class="_page" active?="${_page === 'explore'}"></book-explore>
       <book-detail class="_page" active?="${_page === 'detail'}"></book-detail>
@@ -290,6 +300,7 @@ class BookApp extends connect(store)(LitElement) {
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,
         (matches) => store.dispatch(updateLayout(matches)));
+    this.removeAttribute('unresolved');
     this._input = this.shadowRoot.getElementById('input');
     // get authenticated user
     store.dispatch(fetchUser());

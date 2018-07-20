@@ -127,7 +127,7 @@ class SpeechMic extends LitElement {
 
   constructor() {
     super();
-    this.language = 'en-US';
+    this.language = window.navigator.language;
   }
 
   _firstRendered() {
