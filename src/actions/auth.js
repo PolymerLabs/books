@@ -7,64 +7,45 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+import firebase from 'firebase/app'
+import 'firebase/auth';
+// See https://firebase.google.com/docs/web/setup?authuser=0
+import { config } from './config.js'
 
 export const SET_USER = 'SET_USER';
 export const AUTH_INITIALIZED = 'AUTH_INITIALIZED';
 
-let GoogleAuth;
+// Initialize Firebase
+firebase.initializeApp(config);
 
-export const initAuth = (dispatch) => {
-  if (GoogleAuth) {
-    return Promise.resolve(GoogleAuth);
+export const initFirebaseApp = () => (dispatch) => {
+  if (firebase.apps.length) {
+    dispatch(authInitialized());
   }
-  return loadGapi().then(() => {
-    return gapi.client.init({
-      // Put your client ID here. See https://developers.google.com/identity/protocols/OAuth2UserAgent
-      // for how to create one.
-      clientId: '',
-      scope: 'https://www.googleapis.com/auth/books'
-    }).then(() => {
-      GoogleAuth = gapi.auth2.getAuthInstance();
-      dispatch(authInitialized());
-      return Promise.resolve(GoogleAuth);
-    });
+  firebase.auth().onAuthStateChanged(function (user) {
+    dispatch(setUser(user));
   });
 }
 
-export const fetchUser = () => (dispatch) => {
-  initAuth(dispatch).then(() => {
-    if (GoogleAuth.isSignedIn.get()) {
-      dispatch(setUser(getUserFromGoogleUser(GoogleAuth.currentUser.get())));
+export const signIn = () => async (dispatch) => {
+  if (!firebase.auth().currentUser) {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    // Add rights:
+    // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    try {
+      await firebase.auth().signInWithPopup(provider);
+    } catch (error) {
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        alert('You have already signed up with a different auth provider for that email.');
+      } else {
+        console.error(error.message);
+      }
     }
-  });
-}
-
-export const signIn = () => (dispatch) => {
-  initAuth(dispatch).then(() => {
-    GoogleAuth.signIn({ prompt: 'select_account' })
-      .then((googleUser) => {
-        dispatch(setUser(getUserFromGoogleUser(googleUser)));
-      });
-  });
+  }
 };
 
 export const signOut = () => (dispatch) => {
-  initAuth(dispatch).then(() => {
-    GoogleAuth.signOut()
-      .then(() => {
-        dispatch(setUser());
-      });
-  });
-}
-
-const getUserFromGoogleUser = (googleUser) => {
-  const profile = googleUser.getBasicProfile();
-  return {
-    id: profile.getId(),
-    fullName: profile.getName(),
-    email: profile.getEmail(),
-    imageUrl: profile.getImageUrl()
-  };
+  firebase.auth().signOut();
 }
 
 const authInitialized = () => {
@@ -78,18 +59,4 @@ const setUser = (user) => {
     type: SET_USER,
     user
   };
-}
-
-let initCalled;
-const callbackPromise = new Promise((r) => window.__gapiCallback = r);
-
-const loadGapi = () => {
-  if (!initCalled) {
-    const script = document.createElement('script');
-    script.src = 'https://apis.google.com/js/api:client.js?onload=__gapiCallback';
-    script.setAttribute('async', '');
-    document.head.appendChild(script);
-    initCalled = true;
-  }
-  return callbackPromise;
 }

@@ -27,7 +27,7 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 
 import { store } from '../store.js';
 import { navigate, updateLocationURL, updateOffline, updateLayout, showSnackbar, updateDrawerState } from '../actions/app.js';
-import { signIn, signOut, fetchUser } from '../actions/auth.js';
+import { signIn, signOut, initFirebaseApp } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
   _render({
@@ -227,8 +227,8 @@ class BookApp extends connect(store)(LitElement) {
         <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/">${appTitle}</a></div>
         <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
-            on-click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
-          ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
+            on-click="${() =>  store.dispatch(_user && _user.photoURL ? signOut() : signIn())}">
+          ${_user && _user.photoURL ? html`<img src="${_user.photoURL}">` : accountIcon}
         </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
@@ -302,9 +302,9 @@ class BookApp extends connect(store)(LitElement) {
         (matches) => store.dispatch(updateLayout(matches)));
     this.removeAttribute('unresolved');
     this._input = this.shadowRoot.getElementById('input');
-    // get authenticated user
-    store.dispatch(fetchUser());
-  }
+    // init irebase and get authenticated user if exist
+    store.dispatch(initFirebaseApp());
+}
 
   _stateChanged(state) {
     this._page = state.app.page;
