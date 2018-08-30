@@ -13,7 +13,7 @@ import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { PageViewElement } from './page-view-element.js';
 
 class Book404 extends PageViewElement {
-  _render() {
+  render() {
     updateMetadata({
       title: `Page Not Found - Books`,
       description: 'Page not found'

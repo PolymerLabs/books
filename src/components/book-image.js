@@ -11,7 +11,8 @@
 import { LitElement, html } from '@polymer/lit-element';
 
 class BookImage extends LitElement {
-  _render({ alt, placeholder, src, _loaded }) {
+  render() {
+    const { alt, placeholder, src, _loaded } = this;
     return html`
       <style>
         :host {
@@ -67,26 +68,26 @@ class BookImage extends LitElement {
         }
       </style>
 
-      <div id="placeholder" style$="${placeholder ? `background-image: url('${placeholder}')` : ''}" loaded?="${_loaded}">
+      <div id="placeholder" style="${placeholder ? `background-image: url('${placeholder}');` : ''}" ?loaded="${_loaded}">
         <img src="${src}" alt="${alt}"
-            on-load="${() => this._loaded = true}"
-            on-error="${() => this._onImgError()}">
+            @load="${() => this._loaded = true}"
+            @error="${() => this._onImgError()}">
       </div>
     `;
   }
 
   static get properties() { return {
-    alt: String,
-    src: String,
-    placeholder: String,
-    _loaded: Boolean
+    alt: { type: String },
+    src: { type: String },
+    placeholder: { type: String },
+    _loaded: { type: Boolean }
   }}
 
-  _propertiesChanged(props, changed, oldProps) {
-    if (changed && 'src' in changed) {
-      props._loaded = false;
+  update(changedProps) {
+    if (changedProps.has('src')) {
+      this._loaded = false;
     }
-    super._propertiesChanged(props, changed, oldProps);
+    super.update(changedProps);
   }
 
   _onImgError() {

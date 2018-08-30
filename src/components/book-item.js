@@ -15,7 +15,8 @@ import './book-image.js';
 import './book-rating.js';
 
 class BookItem extends LitElement {
-  _render({ item }) {
+  render() {
+    const { item } = this;
     const info = item && item.volumeInfo;
     const id = item ? item.id : '';
     const title = info ? info.title : '';
@@ -242,21 +243,21 @@ class BookItem extends LitElement {
 
       <a href="/detail/${id}">
         <div class="info">
-          <book-image src="${thumbnail}" alt="${title}"></book-image>
+          <book-image .src="${thumbnail}" .alt="${title}"></book-image>
           <div class="info-section">
             <div class="title-container">
               <h2 class="title">${title}</h2><slot></slot>
             </div>
-            <div class="author info-item" hidden?="${!author}">${author} - ${date}</div>
-            <div class="info-item" hidden?="${!info}">
-              <book-rating rating="${rating}"></book-rating>
+            <div class="author info-item" ?hidden="${!author}">${author} - ${date}</div>
+            <div class="info-item" ?hidden="${!info}">
+              <book-rating .rating="${rating}"></book-rating>
             </div>
           </div>
         </div>
         <div class="desc">${desc}</div>
       </a>
 
-      <div class="placeholder" fadeout?="${info}">
+      <div class="placeholder" ?fadeout="${info}">
         <div class="placeholder-info">
           <div class="placeholder-info-inner-1"></div>
           <div class="placeholder-info-inner-2"></div>
@@ -267,7 +268,7 @@ class BookItem extends LitElement {
   }
 
   static get properties() { return {
-    item: Object
+    item: { type: Object }
   }}
 }
 

@@ -12,7 +12,8 @@ import { LitElement, html } from '@polymer/lit-element';
 import { searchIcon } from './book-icons.js';
 
 class BookInputDecorator extends LitElement {
-  _render({ _focused }) {
+  render() {
+    const { _focused } = this;
     return html`
       <style>
         :host {
@@ -73,23 +74,22 @@ class BookInputDecorator extends LitElement {
       </style>
 
       <div class="icon">${searchIcon}</div>
-      <div class="decorator" focused?="${_focused}">
+      <div class="decorator" ?focused="${_focused}">
         <slot id="inputSlot" name="input"></slot>
         <div class="underline"></div>
       </div>
       <slot name="button"></slot>
     `;
   }
-  
+
   static get properties() {
     return {
-      _focused: Boolean
+      _focused: { type: Boolean }
     }
   }
 
-  async _firstRendered() {
+  firstRendered() {
     // Do all setup work after the first render.
-    await this.renderComplete;
     // Assume the input is in the slot
     this._input = this.shadowRoot.querySelector('#inputSlot').assignedNodes({flatten: true})[0];
     this._input.addEventListener('focus', () => this._focused = true);
