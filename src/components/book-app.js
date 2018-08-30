@@ -290,14 +290,13 @@ class BookApp extends connect(store)(LitElement) {
     }
   }
 
-  update(changedProps) {
-    super.update(changedProps);
+  updated(changedProps) {
     if (changedProps.has('_page')) {
       window.scrollTo(0, 0);
     }
   }
 
-  firstRendered() {
+  firstUpdated() {
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,

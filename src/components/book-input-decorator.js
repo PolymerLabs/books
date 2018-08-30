@@ -88,7 +88,7 @@ class BookInputDecorator extends LitElement {
     }
   }
 
-  firstRendered() {
+  firstUpdated() {
     // Do all setup work after the first render.
     // Assume the input is in the slot
     this._input = this.shadowRoot.querySelector('#inputSlot').assignedNodes({flatten: true})[0];

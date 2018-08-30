@@ -126,7 +126,7 @@ class SpeechMic extends LitElement {
     this.language = window.navigator.language;
   }
 
-  firstRendered() {
+  firstUpdated() {
     if (window.webkitSpeechRecognition) {
       this._recognition = new webkitSpeechRecognition();
       this._recognition.continuous = this.continuous;
