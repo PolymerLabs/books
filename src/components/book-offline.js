@@ -13,7 +13,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { BookButtonStyle } from './shared-styles.js';
 
 class BookOffline extends LitElement {
-  _render() {
+  render() {
     return html`
       ${BookButtonStyle}
       <style>
@@ -26,7 +26,7 @@ class BookOffline extends LitElement {
 
       <section>
         <h3>Oops! You are offline and the request resource is unavailable.</h3>
-        <button class="book-button" on-click="${() => this._refresh()}">Try Again...</button>
+        <button class="book-button" @click="${() => this._refresh()}">Try Again...</button>
       </section>
     `;
   }

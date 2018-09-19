@@ -13,7 +13,7 @@ import { PageViewElement } from './page-view-element.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 class BookAbout extends PageViewElement {
-  _render() {
+  render() {
     updateMetadata({
       title: 'About - Books',
       description: 'About page'

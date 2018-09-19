@@ -18,8 +18,9 @@
     "test:unit": "polymer test --module-resolution=node --npm"
   },
   "dependencies": {
-    "@polymer/app-layout": "^3.0.0-pre.19",
-    "@polymer/lit-element": "^0.5.2",
+    "@polymer/app-layout": "^3.0.0",
+    "@polymer/lit-element": "^0.6.1",
+    "lit-html": "^0.11.4",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "pwa-helpers": "^0.8.2",
     "redux": "^3.7.2",

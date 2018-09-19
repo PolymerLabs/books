@@ -30,21 +30,22 @@ import { navigate, updateLocationURL, updateOffline, updateLayout, showSnackbar,
 import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  _render({
-    appTitle,
-    _page,
-    _lazyResourcesLoaded,
-    _subTitle,
-    _lastVisitedListPage,
-    _offline,
-    _wideLayout,
-    _drawerOpened,
-    _snackbarOpened,
-    _authInitialized,
-    _user,
-    _query,
-    _bookId
-  }) {
+  render() {
+    const {
+      appTitle,
+      _page,
+      _lazyResourcesLoaded,
+      _subTitle,
+      _lastVisitedListPage,
+      _offline,
+      _wideLayout,
+      _drawerOpened,
+      _snackbarOpened,
+      _authInitialized,
+      _user,
+      _query,
+      _bookId
+    } = this;
 
     // Anything that's related to rendering should be done in here.
 
@@ -222,80 +223,80 @@ class BookApp extends connect(store)(LitElement) {
     <!-- Header -->
     <app-header condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
-        <button class="menu-btn" aria-label="Menu" hidden?="${hideMenuBtn}"
-            on-click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
-        <a class="back-btn" aria-label="Go back" hidden?="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
+        <button class="menu-btn" aria-label="Menu" ?hidden="${hideMenuBtn}"
+            @click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
+        <a class="back-btn" aria-label="Go back" ?hidden="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
         <div main-title><a href="/">${appTitle}</a></div>
-        <button class="signin-btn" aria-label="Sign In" visible?="${_authInitialized}"
-            on-click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
+        <button class="signin-btn" aria-label="Sign In" ?visible="${_authInitialized}"
+            @click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
           ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
         </button>
       </app-toolbar>
       <app-toolbar class="toolbar-bottom" sticky>
-        <book-input-decorator top?="${inputAtTop}" hidden?="${hideInput}">
+        <book-input-decorator ?top="${inputAtTop}" ?hidden="${hideInput}">
           <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${query}"
-              on-change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
-          <speech-mic slot="button" continuous interimResults on-result="${(e) => this._micResult(e)}"></speech-mic>
+              @change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
+          <speech-mic slot="button" continuous interimResults @result="${(e) => this._micResult(e)}"></speech-mic>
         </book-input-decorator>
-        <h4 class="subtitle" hidden?="${!hideInput}">${_subTitle}</h4>
+        <h4 class="subtitle" ?hidden="${!hideInput}">${_subTitle}</h4>
       </app-toolbar>
     </app-header>
 
     <!-- Drawer content -->
-    <app-drawer opened="${_drawerOpened}" hidden?="${!_lazyResourcesLoaded}"
-        on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
-      <nav class="drawer-list" on-click="${e => store.dispatch(updateDrawerState(false))}">
-        <a selected?="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
-        <a selected?="${_page === 'favorites'}" href="/favorites">Favorites</a>
-        <a selected?="${_page === 'about'}" href="/about">About</a>
+    <app-drawer .opened="${_drawerOpened}" ?hidden="${!_lazyResourcesLoaded}"
+        @opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+      <nav class="drawer-list" @click="${e => store.dispatch(updateDrawerState(false))}">
+        <a ?selected="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
+        <a ?selected="${_page === 'favorites'}" href="/favorites">Favorites</a>
+        <a ?selected="${_page === 'about'}" href="/about">About</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
-      <book-home class="_page" active?="${_page === 'home'}"></book-home>
-      <book-explore class="_page" active?="${_page === 'explore'}"></book-explore>
-      <book-detail class="_page" active?="${_page === 'detail'}"></book-detail>
-      <book-viewer class="_page" active?="${_page === 'viewer'}"></book-viewer>
-      <book-favorites class="_page" active?="${_page === 'favorites'}"></book-favorites>
-      <book-about class="_page" active?="${_page === 'about'}"></book-about>
-      <book-404 class="_page" active?="${_page === '404'}"></book-404>
+      <book-home class="_page" ?active="${_page === 'home'}"></book-home>
+      <book-explore class="_page" ?active="${_page === 'explore'}"></book-explore>
+      <book-detail class="_page" ?active="${_page === 'detail'}"></book-detail>
+      <book-viewer class="_page" ?active="${_page === 'viewer'}"></book-viewer>
+      <book-favorites class="_page" ?active="${_page === 'favorites'}"></book-favorites>
+      <book-about class="_page" ?active="${_page === 'about'}"></book-about>
+      <book-404 class="_page" ?active="${_page === '404'}"></book-404>
     </main>
 
     <footer>
       <p>Made with &lt;3 by the Polymer team.</p>
     </footer>
 
-    <snack-bar active?="${_snackbarOpened}">
+    <snack-bar ?active="${_snackbarOpened}">
         You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 
   static get properties() {
     return {
-      appTitle: String,
-      _page: String,
-      _lazyResourcesLoaded: Boolean,
-      _subTitle: String,
-      _lastVisitedListPage: Boolean,
-      _offline: Boolean,
-      _wideLayout: Boolean,
-      _drawerOpened: Boolean,
-      _snackbarOpened: Boolean,
-      _authInitialized: Boolean,
-      _user: Object,
-      _query: String,
-      _bookId: String
+      appTitle: { type: String },
+      _page: { type: String },
+      _lazyResourcesLoaded: { type: Boolean },
+      _subTitle: { type: String },
+      _lastVisitedListPage: { type: Boolean },
+      _offline: { type: Boolean },
+      _wideLayout: { type: Boolean },
+      _drawerOpened: { type: Boolean },
+      _snackbarOpened: { type: Boolean },
+      _authInitialized: { type: Boolean },
+      _user: { type: Object },
+      _query: { type: String },
+      _bookId: { type: String }
     }
   }
 
-  _didRender(props, changed) {
-    if ('_page' in changed) {
+  updated(changedProps) {
+    if (changedProps.has('_page')) {
       window.scrollTo(0, 0);
     }
   }
 
-  _firstRendered() {
+  firstUpdated() {
     installRouter((location) => store.dispatch(navigate(location)));
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 648px) and (min-height: 648px)`,

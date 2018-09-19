@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { html } from '@polymer/lit-element';
 import { PageViewElement } from './page-view-element.js';
-import { repeat } from 'lit-html/lib/repeat.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
@@ -31,7 +31,8 @@ store.addReducers({
 });
 
 class BookExplore extends connect(store)(PageViewElement) {
-  _render({ _query, _items, _showOffline }) {
+  render() {
+    const { _query, _items, _showOffline } = this;
     updateMetadata({
       title: `${_query ? `${_query} - ` : ''}Books`,
       description: 'Search for books'
@@ -111,28 +112,28 @@ class BookExplore extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden?="${_showOffline}">
-        <ul class="books" hidden?="${!_query}">
+      <section ?hidden="${_showOffline}">
+        <ul class="books" ?hidden="${!_query}">
           ${repeat(_items, (item) => html`
             <li>
-              <book-item item="${item}"></book-item>
+              <book-item .item="${item}"></book-item>
             </li>
           `)}
         </ul>
 
-        <book-image class="books-bg" alt="Books Home" center src="images/books-bg.jpg" hidden?="${_query}" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAIAAADwyuo0AAAAI0lEQVR4AWPw2v7Wfe1Dj7X3/Pd8YPDf+Uqva79x38GQvW8Bu0sOexptskUAAAAASUVORK5CYII="></book-image>
+        <book-image class="books-bg" alt="Books Home" center src="images/books-bg.jpg" ?hidden="${_query}" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAIAAADwyuo0AAAAI0lEQVR4AWPw2v7Wfe1Dj7X3/Pd8YPDf+Uqva79x38GQvW8Bu0sOexptskUAAAAASUVORK5CYII="></book-image>
 
-        <div class="books-desc" hidden?="${_query}">Search the world's most comprehensive index of full-text books.</div>
+        <div class="books-desc" ?hidden="${_query}">Search the world's most comprehensive index of full-text books.</div>
       </section>
 
-      <book-offline hidden?="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline ?hidden="${!_showOffline}" @refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 
   static get properties() { return {
-    _query: String,
-    _items: Array,
-    _showOffline: Boolean
+    _query: { type: String },
+    _items: { type: Array },
+    _showOffline: { type: Boolean }
   }}
 
   // This is called every time something is updated in the store.

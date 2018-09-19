@@ -13,7 +13,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import './book-image.js';
 
 class BookHome extends LitElement {
-  _render() {
+  render() {
     return html`
       <style>
         :host {

@@ -11,7 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { LitElement, html } from '@polymer/lit-element';
 
 class BookRating extends LitElement {
-  _render({ rating }) {
+  render() {
+    const { rating } = this;
     const width = (rating / 5) * 100 || 0;
 
     return html`
@@ -31,12 +32,12 @@ class BookRating extends LitElement {
         }
       </style>
 
-      <div class="stars" style$="width: ${width}%"></div>
+      <div class="stars" style="width: ${width}%;"></div>
     `;
   }
 
   static get properties() { return {
-    rating: Number
+    rating: { type: Number }
   }}
 }
 

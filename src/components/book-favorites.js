@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { html } from '@polymer/lit-element';
 import { PageViewElement } from './page-view-element.js';
-import { repeat } from 'lit-html/lib/repeat.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
@@ -33,7 +33,8 @@ store.addReducers({
 });
 
 class BookFavorites extends connect(store)(PageViewElement) {
-  _render({ _items, _authInitialized, _user, _showOffline }) {
+  render() {
+    const { _items, _authInitialized, _user, _showOffline } = this;
     updateMetadata({
       title: 'My Favorites - Books',
       description: 'My Favorites'
@@ -130,38 +131,38 @@ class BookFavorites extends connect(store)(PageViewElement) {
         }
       </style>
 
-      <section hidden?="${_showOffline}">
-        <div class="favorites-section" hidden?="${!_authInitialized || !_user}">
-          <div class="favorites-empty" hidden?="${!_authInitialized || !_items || _items.length}">
+      <section ?hidden="${_showOffline}">
+        <div class="favorites-section" ?hidden="${!_authInitialized || !_user}">
+          <div class="favorites-empty" ?hidden="${!_authInitialized || !_items || _items.length}">
             <h3>Your favorites are empty</h3>
             <p>Go <a href="/explore">find some books</a> and add to your favorites</p>
           </div>
           <ul class="books">
             ${_items && repeat(_items, (item) => html`
               <li>
-                <book-item item="${item}">
-                  <button class="fav-button" title="Remove favorite" on-click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
+                <book-item .item="${item}">
+                  <button class="fav-button" title="Remove favorite" @click="${(e) => this._removeFavorite(e, item)}">${closeIcon}</button>
                 </book-item>
               </li>
             `)}
           </ul>
         </div>
 
-        <div class="signin-section" hidden?="${!_authInitialized || _user}">
+        <div class="signin-section" ?hidden="${!_authInitialized || _user}">
           <p>Please sign in to see the favorites.</p>
-          <button class="book-button" on-click="${() => store.dispatch(signIn())}">Sign in</button>
+          <button class="book-button" @click="${() => store.dispatch(signIn())}">Sign in</button>
         </div>
       </section>
 
-      <book-offline hidden?="${!_showOffline}" on-refresh="${() => store.dispatch(refreshPage())}"></book-offline>
+      <book-offline ?hidden="${!_showOffline}" @refresh="${() => store.dispatch(refreshPage())}"></book-offline>
     `;
   }
 
   static get properties() { return {
-    _items: Array,
-    _authInitialized: Boolean,
-    _user: Object,
-    _showOffline: Boolean
+    _items: { type: Array },
+    _authInitialized: { type: Boolean },
+    _user: { type: Object },
+    _showOffline: { type: Boolean }
   }}
 
   // This is called every time something is updated in the store.
