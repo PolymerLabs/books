@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { unsafeHTML } from 'lit-html/lib/unsafe-html.js';
+import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 import './book-image.js';
 import './book-rating.js';
