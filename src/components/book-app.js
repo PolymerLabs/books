@@ -307,7 +307,7 @@ class BookApp extends connect(store)(LitElement) {
     store.dispatch(fetchUser());
   }
 
-  _stateChanged(state) {
+  stateChanged(state) {
     this._page = state.app.page;
     this._lazyResourcesLoaded = state.app.lazyResourcesLoaded;
     this._subTitle = state.app.subTitle;

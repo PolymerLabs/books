@@ -79,7 +79,7 @@ class BookViewer extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this._bookId = state.book.id;
     this._item = bookSelector(state);
   }

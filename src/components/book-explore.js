@@ -137,7 +137,7 @@ class BookExplore extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this._query = state.books.query;
     this._items = itemListSelector(state);
     this._showOffline = state.app.offline && state.books.failure;

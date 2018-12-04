@@ -23,7 +23,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </script>
 
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-    <script src="../../node_modules/wct-browser-legacy/browser.js"></script>
+    <script src="../../node_modules/@polymer/test-fixture/test-fixture.js"></script>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
   </head>
   <body>
     <test-fixture id="about">
@@ -77,49 +79,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       import { RECEIVE_FAVORITES } from '../../src/actions/favorites.js';
       import { SET_USER, AUTH_INITIALIZED } from '../../src/actions/auth.js';
 
+      function nextFrame() {
+        return new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+
       suite('views a11y tests', function() {
-        test('about', function() {
+        test('about', async function() {
           const el = fixture('about');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('home', function() {
+        test('home', async function() {
           const el = fixture('home');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('explore', function() {
+        test('explore', async function() {
           store.dispatch({type: REQUEST_BOOKS, query: 'google'});
           store.dispatch({type: RECEIVE_BOOKS, query: 'google', items: book_items});
           const el = fixture('explore');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('explore - offline', function() {
+        test('explore - offline', async function() {
           store.dispatch({type: REQUEST_BOOKS, query: 'google'});
           store.dispatch({type: FAIL_BOOKS, query: 'google'});
           store.dispatch({type: UPDATE_OFFLINE, offline: true});
           const el = fixture('explore');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('detail', function() {
+        test('detail', async function() {
           store.dispatch({type: REQUEST_BOOK, id: 'UVz06fnwJvUC'});
           store.dispatch({type: RECEIVE_BOOK, id: 'UVz06fnwJvUC', item: book_items[0]});
           const el = fixture('detail');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('favorites', function() {
+        test('favorites', async function() {
           store.dispatch({type: AUTH_INITIALIZED});
           store.dispatch({type: SET_USER, user: {id: 'foo'}});
           store.dispatch({type: RECEIVE_FAVORITES, items: book_items});
           const el = fixture('favorites');
+          await nextFrame();
           return axeReport(el);
         });
 
-        test('viewer', function() {
+        test('viewer', async function() {
           const el = fixture('viewer');
+          await nextFrame();
           return axeReport(el);
         });
       });

@@ -166,7 +166,7 @@ class BookFavorites extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this._items = favoriteListSelector(state);
     this._authInitialized = state.auth.initialized;
     this._user = state.auth.user;

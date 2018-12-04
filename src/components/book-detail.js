@@ -303,7 +303,7 @@ class BookDetail extends connect(store)(PageViewElement) {
   }}
 
   // This is called every time something is updated in the store.
-  _stateChanged(state) {
+  stateChanged(state) {
     this._item = bookSelector(state);
     this._favorites = state.favorites && state.favorites.items;
     this._lastVisitedListPage = state.app.lastVisitedListPage;
