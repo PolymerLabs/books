@@ -8,100 +8,104 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html, css } from 'lit-element';
 
 class SpeechMic extends LitElement {
+  static get styles() {
+    return [
+      css`
+      :host {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        align-content: stretch;
+        position: relative;
+        width: 40px;
+        height: 40px;
+      }
+
+      button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        padding: 8px;
+        box-sizing: border-box;
+        background: transparent;
+        border-radius: 50%;
+        outline: none;
+      }
+
+      button:focus {
+        background-color: #dedede;
+      }
+
+      :host([recognizing]) > button {
+        background-color: #d23f31;
+        fill: #fff;
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+
+      .ring1 {
+        display: none;
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        border-radius: 100%;
+        background-color: rgba(0, 0, 0 , 0.1);
+      }
+
+      :host([recognizing]) > .ring1 {
+        display: block;
+        animation: ring1-pulse 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+      }
+
+      @keyframes ring1-pulse {
+        0% {
+          transform: scale(0.5);
+        }
+        40% {
+          transform: scale(0.8);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .ring2 {
+        display: none;
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        border-radius: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      :host([recognizing]) > .ring2 {
+        display: block;
+        animation: ring2-pulse 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+      }
+
+      @keyframes ring2-pulse {
+        0% {
+          transform: scale(0.3);
+        }
+        40% {
+          transform: scale(0.5);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      `
+    ];
+  }
+
   render() {
     return html`
-      <style>
-        :host {
-          display: inline-flex;
-          justify-content: center;
-          align-items: center;
-          align-content: stretch;
-          position: relative;
-          width: 40px;
-          height: 40px;
-        }
-
-        button {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          border: 0;
-          padding: 8px;
-          box-sizing: border-box;
-          background: transparent;
-          border-radius: 50%;
-          outline: none;
-        }
-
-        button:focus {
-          background-color: #dedede;
-        }
-
-        :host([recognizing]) > button {
-          background-color: #d23f31;
-          fill: #fff;
-          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        }
-
-        .ring1 {
-          display: none;
-          position: absolute;
-          width: 200%;
-          height: 200%;
-          border-radius: 100%;
-          background-color: rgba(0, 0, 0 , 0.1);
-        }
-
-        :host([recognizing]) > .ring1 {
-          display: block;
-          animation: ring1-pulse 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-        }
-
-        @keyframes ring1-pulse {
-          0% {
-            transform: scale(0.5);
-          }
-          40% {
-            transform: scale(0.8);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-
-        .ring2 {
-          display: none;
-          position: absolute;
-          width: 300%;
-          height: 300%;
-          border-radius: 100%;
-          box-sizing: border-box;
-          border: 1px solid rgba(0, 0, 0, 0.08);
-        }
-
-        :host([recognizing]) > .ring2 {
-          display: block;
-          animation: ring2-pulse 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-        }
-
-        @keyframes ring2-pulse {
-          0% {
-            transform: scale(0.3);
-          }
-          40% {
-            transform: scale(0.5);
-          }
-          100% {
-            transform: scale(1);
-          }
-        }
-      </style>
-
       <div class="ring1"></div>
       <div class="ring2"></div>
       <button title="Search by voice" @click="${() => this.toggle()}">

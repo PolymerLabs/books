@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html, css } from 'lit-element';
 
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-header/app-header.js';
@@ -30,39 +30,9 @@ import { navigate, updateLocationURL, updateOffline, updateLayout, showSnackbar,
 import { signIn, signOut, fetchUser } from '../actions/auth.js';
 
 class BookApp extends connect(store)(LitElement) {
-  render() {
-    const {
-      appTitle,
-      _page,
-      _lazyResourcesLoaded,
-      _subTitle,
-      _lastVisitedListPage,
-      _offline,
-      _wideLayout,
-      _drawerOpened,
-      _snackbarOpened,
-      _authInitialized,
-      _user,
-      _query,
-      _bookId
-    } = this;
-
-    // Anything that's related to rendering should be done in here.
-
-    // True to hide the menu button and show the back button.
-    const hideMenuBtn = _page === 'detail' || _page === 'viewer';
-    // True to hide the input.
-    const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
-    // True to make the search input aligns at the top inside the header instead of inside the main content.
-    const inputAtTop = ('ontouchstart' in window || !_wideLayout) || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
-    // back button href
-    const backHref = _page === 'detail' ?
-        (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
-    // query
-    const query = _page === 'home' ? '' : _query;
-
-    return html`
-    <style>
+  static get styles() {
+    return [
+      css`
       :host {
         display: block;
 
@@ -218,57 +188,91 @@ class BookApp extends connect(store)(LitElement) {
       [hidden] {
         display: none !important;
       }
-    </style>
+      `
+    ];
+  }
 
-    <!-- Header -->
-    <app-header condenses reveals effects="waterfall">
-      <app-toolbar class="toolbar-top">
-        <button class="menu-btn" aria-label="Menu" ?hidden="${hideMenuBtn}"
-            @click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
-        <a class="back-btn" aria-label="Go back" ?hidden="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
-        <div main-title><a href="/">${appTitle}</a></div>
-        <button class="signin-btn" aria-label="Sign In" ?visible="${_authInitialized}"
-            @click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
-          ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
-        </button>
-      </app-toolbar>
-      <app-toolbar class="toolbar-bottom" sticky>
-        <book-input-decorator ?top="${inputAtTop}" ?hidden="${hideInput}">
-          <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${query}"
-              @change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
-          <speech-mic slot="button" continuous interimResults @result="${(e) => this._micResult(e)}"></speech-mic>
-        </book-input-decorator>
-        <h4 class="subtitle" ?hidden="${!hideInput}">${_subTitle}</h4>
-      </app-toolbar>
-    </app-header>
+  render() {
+    const {
+      appTitle,
+      _page,
+      _lazyResourcesLoaded,
+      _subTitle,
+      _lastVisitedListPage,
+      _offline,
+      _wideLayout,
+      _drawerOpened,
+      _snackbarOpened,
+      _authInitialized,
+      _user,
+      _query,
+      _bookId
+    } = this;
 
-    <!-- Drawer content -->
-    <app-drawer .opened="${_drawerOpened}" ?hidden="${!_lazyResourcesLoaded}"
-        @opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
-      <nav class="drawer-list" @click="${e => store.dispatch(updateDrawerState(false))}">
-        <a ?selected="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
-        <a ?selected="${_page === 'favorites'}" href="/favorites">Favorites</a>
-        <a ?selected="${_page === 'about'}" href="/about">About</a>
-      </nav>
-    </app-drawer>
+    // Anything that's related to rendering should be done in here.
 
-    <!-- Main content -->
-    <main role="main" class="main-content">
-      <book-home class="_page" ?active="${_page === 'home'}"></book-home>
-      <book-explore class="_page" ?active="${_page === 'explore'}"></book-explore>
-      <book-detail class="_page" ?active="${_page === 'detail'}"></book-detail>
-      <book-viewer class="_page" ?active="${_page === 'viewer'}"></book-viewer>
-      <book-favorites class="_page" ?active="${_page === 'favorites'}"></book-favorites>
-      <book-about class="_page" ?active="${_page === 'about'}"></book-about>
-      <book-404 class="_page" ?active="${_page === '404'}"></book-404>
-    </main>
+    // True to hide the menu button and show the back button.
+    const hideMenuBtn = _page === 'detail' || _page === 'viewer';
+    // True to hide the input.
+    const hideInput = !_page || _page === 'favorites' || _page === 'about' || _page === '404';
+    // True to make the search input aligns at the top inside the header instead of inside the main content.
+    const inputAtTop = ('ontouchstart' in window || !_wideLayout) || (_page === 'explore' && _query) || _page === 'detail' || _page === 'viewer';
+    // back button href
+    const backHref = _page === 'detail' ?
+        (_lastVisitedListPage === 'favorites' ? '/favorites' : `/explore?q=${_query}`) : `/detail/${_bookId}`;
+    // query
+    const query = _page === 'home' ? '' : _query;
 
-    <footer>
-      <p>Made with &lt;3 by the Polymer team.</p>
-    </footer>
+    return html`
+      <!-- Header -->
+      <app-header condenses reveals effects="waterfall">
+        <app-toolbar class="toolbar-top">
+          <button class="menu-btn" aria-label="Menu" ?hidden="${hideMenuBtn}"
+              @click="${() => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
+          <a class="back-btn" aria-label="Go back" ?hidden="${!hideMenuBtn}" href="${backHref}">${backIcon}</a>
+          <div main-title><a href="/">${appTitle}</a></div>
+          <button class="signin-btn" aria-label="Sign In" ?visible="${_authInitialized}"
+              @click="${() =>  store.dispatch(_user && _user.imageUrl ? signOut() : signIn())}">
+            ${_user && _user.imageUrl ? html`<img src="${_user.imageUrl}">` : accountIcon}
+          </button>
+        </app-toolbar>
+        <app-toolbar class="toolbar-bottom" sticky>
+          <book-input-decorator ?top="${inputAtTop}" ?hidden="${hideInput}">
+            <input slot="input" id="input" aria-label="Search Books" autofocus type="search" value="${query}"
+                @change="${(e) => store.dispatch(updateLocationURL(`/explore?q=${e.target.value}`))}">
+            <speech-mic slot="button" continuous interimResults @result="${(e) => this._micResult(e)}"></speech-mic>
+          </book-input-decorator>
+          <h4 class="subtitle" ?hidden="${!hideInput}">${_subTitle}</h4>
+        </app-toolbar>
+      </app-header>
 
-    <snack-bar ?active="${_snackbarOpened}">
-        You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
+      <!-- Drawer content -->
+      <app-drawer .opened="${_drawerOpened}" ?hidden="${!_lazyResourcesLoaded}"
+          @opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
+        <nav class="drawer-list" @click="${e => store.dispatch(updateDrawerState(false))}">
+          <a ?selected="${_page === 'explore'}" href="/explore?q=${query}">Home</a>
+          <a ?selected="${_page === 'favorites'}" href="/favorites">Favorites</a>
+          <a ?selected="${_page === 'about'}" href="/about">About</a>
+        </nav>
+      </app-drawer>
+
+      <!-- Main content -->
+      <main role="main" class="main-content">
+        <book-home class="_page" ?active="${_page === 'home'}"></book-home>
+        <book-explore class="_page" ?active="${_page === 'explore'}"></book-explore>
+        <book-detail class="_page" ?active="${_page === 'detail'}"></book-detail>
+        <book-viewer class="_page" ?active="${_page === 'viewer'}"></book-viewer>
+        <book-favorites class="_page" ?active="${_page === 'favorites'}"></book-favorites>
+        <book-about class="_page" ?active="${_page === 'about'}"></book-about>
+        <book-404 class="_page" ?active="${_page === '404'}"></book-404>
+      </main>
+
+      <footer>
+        <p>Made with &lt;3 by the Polymer team.</p>
+      </footer>
+
+      <snack-bar ?active="${_snackbarOpened}">
+          You are now ${_offline ? 'offline' : 'online'}.</snack-bar>
     `;
   }
 

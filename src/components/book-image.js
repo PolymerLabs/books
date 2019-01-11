@@ -8,66 +8,70 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html, css } from 'lit-element';
 
 class BookImage extends LitElement {
+  static get styles() {
+    return [
+      css`
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      #placeholder {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+      }
+
+      :host([blur-up]) #placeholder {
+        background-position: center 10%;
+        background-size: 80%;
+        background-repeat: no-repeat;
+        filter: blur(3px);
+        will-change: filter;
+      }
+
+      :host([blur-up]) #placeholder[loaded] {
+        filter: blur(0);
+        transition: 0.2s filter ease-in-out;
+      }
+
+      img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0 auto;
+        opacity: 0;
+      }
+
+      :host([center]) img {
+        left: -9999px;
+        right: -9999px;
+        max-width: none;
+      }
+
+      #placeholder[loaded] img {
+        opacity: 1;
+        transition: 0.5s opacity;
+      }
+      `
+    ];
+  }
+
   render() {
     const { alt, placeholder, src, _loaded } = this;
     return html`
-      <style>
-        :host {
-          display: block;
-          position: relative;
-        }
-
-        #placeholder {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          overflow: hidden;
-          background-size: cover;
-          background-position: center;
-        }
-
-        :host([blur-up]) #placeholder {
-          background-position: center 10%;
-          background-size: 80%;
-          background-repeat: no-repeat;
-          filter: blur(3px);
-          will-change: filter;
-        }
-
-        :host([blur-up]) #placeholder[loaded] {
-          filter: blur(0);
-          transition: 0.2s filter ease-in-out;
-        }
-
-        img {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          max-width: 100%;
-          max-height: 100%;
-          margin: 0 auto;
-          opacity: 0;
-        }
-
-        :host([center]) img {
-          left: -9999px;
-          right: -9999px;
-          max-width: none;
-        }
-
-        #placeholder[loaded] img {
-          opacity: 1;
-          transition: 0.5s opacity;
-        }
-      </style>
-
       <div id="placeholder" style="${placeholder ? `background-image: url('${placeholder}');` : ''}" ?loaded="${_loaded}">
         <img src="${src}" alt="${alt}"
             @load="${() => this._loaded = true}"

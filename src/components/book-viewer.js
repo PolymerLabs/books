@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '@polymer/lit-element';
+import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
@@ -38,6 +38,29 @@ function loadGoogleBooks() {
 }
 
 class BookViewer extends connect(store)(PageViewElement) {
+  static get styles() {
+    return [
+      css`
+      :host {
+        display: block;
+      }
+
+      #viewer {
+        width: 100%;
+        height: 100%;
+      }
+
+      #viewer > div > div > div:nth-child(2) {
+        display: none;
+      }
+
+      #viewer .overflow-scrolling {
+        -webkit-overflow-scrolling: touch;
+      }
+      `
+    ];
+  }
+
   render() {
     const { _item } = this;
     if (_item) {
@@ -50,25 +73,6 @@ class BookViewer extends connect(store)(PageViewElement) {
     }
 
     return html`
-      <style>
-        :host {
-          display: block;
-        }
-
-        #viewer {
-          width: 100%;
-          height: 100%;
-        }
-
-        #viewer > div > div > div:nth-child(2) {
-          display: none;
-        }
-
-        #viewer .overflow-scrolling {
-          -webkit-overflow-scrolling: touch;
-        }
-      </style>
-
       <div id="viewer"></div>
     `;
   }

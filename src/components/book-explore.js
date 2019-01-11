@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '@polymer/lit-element';
+import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { connect } from 'pwa-helpers/connect-mixin.js';
@@ -31,6 +31,83 @@ store.addReducers({
 });
 
 class BookExplore extends connect(store)(PageViewElement) {
+  static get styles() {
+    return [
+      css`
+      :host {
+        display: block;
+      }
+
+      .books {
+        max-width: 432px;
+        margin: 0 auto;
+        padding: 8px;
+        box-sizing: border-box;
+        /* remove margin between inline-block nodes */
+        font-size: 0;
+      }
+
+      li {
+        display: inline-block;
+        position: relative;
+        width: calc(100% - 16px);
+        max-width: 400px;
+        min-height: 240px;
+        margin: 8px;
+        font-size: 14px;
+        vertical-align: top;
+        background: #fff;
+        border-radius: 2px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        list-style: none;
+      }
+
+      li::after {
+        content: '';
+        display: block;
+        padding-top: 65%;
+      }
+
+      .books-bg {
+        height: 300px;
+        max-width: 570px;
+        margin: 0 auto;
+      }
+
+      .books-desc {
+        padding: 24px 16px 0;
+        text-align: center;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      /* Wide Layout */
+      @media (min-width: 648px) {
+        li {
+          height: 364px;
+        }
+
+        .books-desc {
+          padding: 96px 16px 0;
+        }
+      }
+
+      /* Wider layout: 2 columns */
+      @media (min-width: 872px) {
+        .books {
+          width: 832px;
+          max-width: none;
+          padding: 16px 0;
+        }
+      }
+      `
+    ];
+  }
+
   render() {
     const { _query, _items, _showOffline } = this;
     updateMetadata({
@@ -39,79 +116,6 @@ class BookExplore extends connect(store)(PageViewElement) {
     });
 
     return html`
-      <style>
-        :host {
-          display: block;
-        }
-
-        .books {
-          max-width: 432px;
-          margin: 0 auto;
-          padding: 8px;
-          box-sizing: border-box;
-          /* remove margin between inline-block nodes */
-          font-size: 0;
-        }
-
-        li {
-          display: inline-block;
-          position: relative;
-          width: calc(100% - 16px);
-          max-width: 400px;
-          min-height: 240px;
-          margin: 8px;
-          font-size: 14px;
-          vertical-align: top;
-          background: #fff;
-          border-radius: 2px;
-          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-                      0 1px 5px 0 rgba(0, 0, 0, 0.12),
-                      0 3px 1px -2px rgba(0, 0, 0, 0.2);
-          list-style: none;
-        }
-
-        li::after {
-          content: '';
-          display: block;
-          padding-top: 65%;
-        }
-
-        .books-bg {
-          height: 300px;
-          max-width: 570px;
-          margin: 0 auto;
-        }
-
-        .books-desc {
-          padding: 24px 16px 0;
-          text-align: center;
-        }
-
-        [hidden] {
-          display: none !important;
-        }
-
-        /* Wide Layout */
-        @media (min-width: 648px) {
-          li {
-            height: 364px;
-          }
-
-          .books-desc {
-            padding: 96px 16px 0;
-          }
-        }
-
-        /* Wider layout: 2 columns */
-        @media (min-width: 872px) {
-          .books {
-            width: 832px;
-            max-width: none;
-            padding: 16px 0;
-          }
-        }
-      </style>
-
       <section ?hidden="${_showOffline}">
         <ul class="books" ?hidden="${!_query}">
           ${repeat(_items, (item) => html`

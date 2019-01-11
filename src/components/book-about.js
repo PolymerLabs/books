@@ -8,11 +8,23 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '@polymer/lit-element';
+import { html, css } from 'lit-element';
 import { PageViewElement } from './page-view-element.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 class BookAbout extends PageViewElement {
+  static get styles() {
+    return [
+      css`
+      :host {
+        padding: 16px;
+        text-align: center;
+        line-height: 1.5;
+      }
+      `
+    ];
+  }
+
   render() {
     updateMetadata({
       title: 'About - Books',
@@ -20,14 +32,6 @@ class BookAbout extends PageViewElement {
     });
 
     return html`
-      <style>
-        :host {
-          padding: 16px;
-          text-align: center;
-          line-height: 1.5;
-        }
-      </style>
-
       <p>Google Books PWA</p>
       <p><a href="http://books.google.com" target="_blank" rel="noopener">Visit the regular Google Books site</a></p>
     `;

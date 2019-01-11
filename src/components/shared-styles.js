@@ -8,10 +8,9 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { html } from '@polymer/lit-element';
+import { css } from 'lit-element';
 
-export const BookButtonStyle = html`
-<style>
+export const BookButtonStyle = css`
   .book-button {
     display: inline-block;
     margin-right: 8px;
@@ -31,5 +30,4 @@ export const BookButtonStyle = html`
     background-color: var(--app-dark-text-color);
     color: #FFF;
   }
-</style>
 `;
